@@ -24,3 +24,8 @@ coverage
 
 # prisma (se usar depois)
 prisma/dev.db
+
+#docker
+data
+
+/generated/prisma
