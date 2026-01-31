@@ -1,0 +1,6 @@
+// SO PARA TER BASE N VAMOS USAR AQUI NO DDD
+
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  ADOPTER = 'ADOPTER',
+}
