@@ -1,8 +1,8 @@
-import { RepositoriesUnits } from "../repositories/unistsRepositories";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { createUniqueUnitSlug } from "../../../../core/utils/createUniqueUnitSlug";
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
-import { Either, left, right } from "@/core/either";
+import { RepositoriesUnits } from '../repositories/unistsRepositories';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { createUniqueUnitSlug } from '../../../../core/utils/createUniqueUnitSlug';
+import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { Either, left, right } from '@/core/either';
 
 interface updateUnitServiceRequest {
   id: string;
@@ -13,7 +13,7 @@ interface updateUnitServiceRequest {
   managerId: string;
 }
 
-type updateUnitServiceResponse = Either<NotFoundError, {}>;
+type updateUnitServiceResponse = Either<NotFoundError, null>;
 
 export class ServiceUpdateUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
@@ -29,17 +29,17 @@ export class ServiceUpdateUnit {
     const unit = await this.repositoriesUnits.findById(id);
 
     if (!unit) {
-      return left(new NotFoundError("unidade"));
+      return left(new NotFoundError('unidade'));
     }
 
-   const result =  await createUniqueUnitSlug({
+    const result = await createUniqueUnitSlug({
       name,
       repositoriesUnits: this.repositoriesUnits,
-      entityName: "unidade",
+      entityName: 'unidade',
     });
 
-    if(result.isLeft()){
-      return left(result.value)
+    if (result.isLeft()) {
+      return left(result.value);
     }
 
     unit.update({
@@ -50,6 +50,6 @@ export class ServiceUpdateUnit {
       state,
     });
 
-    return right({});
+    return right(null);
   }
 }

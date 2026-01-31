@@ -1,8 +1,7 @@
-import { Either, left, right } from "@/core/either";
-import { Adoption } from "@/domain/adoption/enterprise/entities/adoption";
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
-import { RepositoriesAdoption } from "../../repositories/adoption";
-interface ListAdoptionServiceRequest {}
+import { Either, right } from '@/core/either';
+import { Adoption } from '@/domain/adoption/enterprise/entities/adoption';
+import { RepositoriesAdoption } from '../../repositories/adoption';
+//interface ListAdoptionServiceRequest {}
 
 type ListAdoptionServiceResponse = Either<null, { adoptions: Adoption[] }>;
 

@@ -1,20 +1,20 @@
-import { InMemoryRepositoriesAdoptionCandidate } from "@/test/repositories/in-memory-adoptionCandidate";
-import { ServiceFindByIdAdoptionCandidate } from "./findbyid-service-adoptionCandidate";
-import { makeAdoptionCandidate } from "@/test/factories/makeAdoptionCandidate";
+import { InMemoryRepositoriesAdoptionCandidate } from '@/test/repositories/in-memory-adoptionCandidate';
+import { ServiceFindByIdAdoptionCandidate } from './findbyid-service-adoptionCandidate';
+import { makeAdoptionCandidate } from '@/test/factories/makeAdoptionCandidate';
 
 let inMemoryRepositoriesAdoptionCandidate: InMemoryRepositoriesAdoptionCandidate;
 let sut: ServiceFindByIdAdoptionCandidate;
 
-describe("AdoptionCandidate Service", () => {
+describe('AdoptionCandidate Service', () => {
   beforeEach(() => {
     inMemoryRepositoriesAdoptionCandidate =
       new InMemoryRepositoriesAdoptionCandidate();
     sut = new ServiceFindByIdAdoptionCandidate(
-      inMemoryRepositoriesAdoptionCandidate
+      inMemoryRepositoriesAdoptionCandidate,
     );
   });
 
-  it("deve criar um candidate corretamente", async () => {
+  it('deve criar um candidate corretamente', async () => {
     const candidate = makeAdoptionCandidate();
     inMemoryRepositoriesAdoptionCandidate.create(candidate);
 
@@ -27,7 +27,7 @@ describe("AdoptionCandidate Service", () => {
 
       expect(adoptionCandidate.id).toBeTruthy();
       expect(inMemoryRepositoriesAdoptionCandidate.items[0]).toEqual(
-        adoptionCandidate
+        adoptionCandidate,
       );
     }
   });

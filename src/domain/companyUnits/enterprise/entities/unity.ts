@@ -1,7 +1,7 @@
-import { Entity } from "@/core/entities/entitty";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
-import { Slug } from "@/core/value-objects/slug";
+import { Entity } from '@/core/entities/entitty';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
+import { Slug } from '@/core/value-objects/slug';
 
 export interface UnitProps {
   name: string;
@@ -20,17 +20,20 @@ export class Units extends Entity<UnitProps> {
   static create(
     props: Optional<
       UnitProps,
-      "createdAt" | "isPrincipal" | "slug" | "isActive"
+      'createdAt' | 'isPrincipal' | 'slug' | 'isActive'
     >,
-    id?: UniqueEntityId
+    id?: UniqueEntityId,
   ) {
-    const unitsContent = new Units({
-      ...props,
-      slug: props.slug ?? Slug.createFromText(props.name),
-      createdAt: props.createdAt ?? new Date(),
-      isPrincipal: props.isPrincipal ?? false,
-      isActive: props.isActive ?? true,
-    }, id);
+    const unitsContent = new Units(
+      {
+        ...props,
+        slug: props.slug ?? Slug.createFromText(props.name),
+        createdAt: props.createdAt ?? new Date(),
+        isPrincipal: props.isPrincipal ?? false,
+        isActive: props.isActive ?? true,
+      },
+      id,
+    );
     return unitsContent;
   }
   //getter

@@ -1,5 +1,5 @@
-import { RepositoriesUnits } from "@/domain/companyUnits/application/repositories/unistsRepositories";
-import { Units } from "@/domain/companyUnits/enterprise/entities/unity";
+import { RepositoriesUnits } from '@/domain/companyUnits/application/repositories/unistsRepositories';
+import { Units } from '@/domain/companyUnits/enterprise/entities/unity';
 
 export class InMemoryRepositoriesUnits implements RepositoriesUnits {
   public items: Units[] = [];
@@ -31,20 +31,17 @@ export class InMemoryRepositoriesUnits implements RepositoriesUnits {
       this.items.splice(index, 1);
     }
   }
-async toggleActive(id: string, isActiveValue: boolean): Promise<void> {
-  const index = this.items.findIndex(item => item.id.toString() === id);
-  if (index === -1) {
-    throw new Error("Unidade não encontrada");
+  async toggleActive(id: string): Promise<void> {
+    const index = this.items.findIndex((item) => item.id.toString() === id);
+    if (index === -1) {
+      return;
+    }
   }
-  this.items[index] = this.items[index]; 
-}
-  async update(id: string, unit: Units): Promise<void> {
+  async update(id: string): Promise<void> {
     const index = this.items.findIndex((item) => item.id.toString() === id);
 
     if (index === -1) {
       return;
     }
-
-   
   }
 }

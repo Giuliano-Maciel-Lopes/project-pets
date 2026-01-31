@@ -1,5 +1,5 @@
-import { Entity } from "@/core/entities/entitty";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
+import { Entity } from '@/core/entities/entitty';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 interface AttachmentProps {
   title: string;
@@ -12,7 +12,7 @@ export class Attachment extends Entity<AttachmentProps> {
 
     return attachment;
   }
-  
+
   get title() {
     return this.props.title;
   }

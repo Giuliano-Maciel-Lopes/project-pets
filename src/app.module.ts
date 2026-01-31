@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
-import { HttpModule } from './infra/http/http.module'
-import { envSchema } from './infra/env/env.schema'
-import { EnvService } from './infra/env/env.service'
-import { EnvModule } from './infra/env/env.module'
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from './infra/http/http.module';
+import { envSchema } from './infra/env/env.schema';
+import { EnvService } from './infra/env/env.service';
+import { EnvModule } from './infra/env/env.module';
 
 @Module({
   imports: [
@@ -12,8 +12,8 @@ import { EnvModule } from './infra/env/env.module'
       validate: (env) => envSchema.parse(env),
     }),
     HttpModule,
-    EnvModule
+    EnvModule,
   ],
-  providers:[EnvService]
+  providers: [EnvService],
 })
 export class AppModule {}

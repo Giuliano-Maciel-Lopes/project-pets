@@ -1,8 +1,8 @@
-import { Either, right } from "@/core/either";
-import { Pets, PetSex, PetStatus } from "../../enterprise/entity/pets";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { RepositoriesPets } from "../repositories/pets";
-import { ServicePetAttachments } from "./attachements-service-pets";
+import { Either, right } from '@/core/either';
+import { Pets, PetSex, PetStatus } from '../../enterprise/entity/pets';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { RepositoriesPets } from '../repositories/pets';
+import { ServicePetAttachments } from './attachements-service-pets';
 
 interface CreatePetServiceRequest {
   name: string;
@@ -20,11 +20,11 @@ type CreatePetServiceResponse = Either<null, { pet: Pets }>;
 export class ServiceCreatePets {
   constructor(
     private repositoriesPets: RepositoriesPets,
-    private servicePetAttachments: ServicePetAttachments
+    private servicePetAttachments: ServicePetAttachments,
   ) {}
 
   async execute(
-    data: CreatePetServiceRequest
+    data: CreatePetServiceRequest,
   ): Promise<CreatePetServiceResponse> {
     const pet = Pets.create({
       ...data,

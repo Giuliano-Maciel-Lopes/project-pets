@@ -1,18 +1,18 @@
-import { makeAdoption } from "@/test/factories/makeAdoption";
-import { InMemoryRepositoriesAdoption } from "@/test/repositories/in-memory-adoptions";
-import { ServiceStatusAdoption } from "./status-service-adoption";
-import { AdoptionStatus } from "@/domain/adoption/enterprise/entities/adoption";
+import { makeAdoption } from '@/test/factories/makeAdoption';
+import { InMemoryRepositoriesAdoption } from '@/test/repositories/in-memory-adoptions';
+import { ServiceStatusAdoption } from './status-service-adoption';
+import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
 
 let inMemoryRepositoriesAdoption: InMemoryRepositoriesAdoption;
 let sut: ServiceStatusAdoption;
 
-describe("Adoption", () => {
+describe('Adoption', () => {
   beforeEach(() => {
     inMemoryRepositoriesAdoption = new InMemoryRepositoriesAdoption();
     sut = new ServiceStatusAdoption(inMemoryRepositoriesAdoption);
   });
 
-  it("deve procurar  um  adoption  corretamente", async () => {
+  it('deve procurar  um  adoption  corretamente', async () => {
     const adoption = makeAdoption({ status: AdoptionStatus.PENDING });
 
     await inMemoryRepositoriesAdoption.create(adoption);

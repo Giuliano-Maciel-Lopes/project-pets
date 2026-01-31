@@ -1,8 +1,7 @@
-import { Entity } from "@/core/entities/entitty";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
-import { CPF } from "./value-objects/cpf";
-import { AggregateRoot } from "@/core/entities/aggregate-root";
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
+import { CPF } from './value-objects/cpf';
+import { AggregateRoot } from '@/core/entities/aggregate-root';
 
 export interface AdoptionCandidateProps {
   name: string;
@@ -20,8 +19,8 @@ export interface AdoptionCandidateProps {
 
 export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
   static create(
-    props: Optional<AdoptionCandidateProps, "createdAt" | "isBanned">,
-    id?: UniqueEntityId
+    props: Optional<AdoptionCandidateProps, 'createdAt' | 'isBanned'>,
+    id?: UniqueEntityId,
   ) {
     const adoptionCandidateContent = new AdoptionCandidate(
       {
@@ -29,7 +28,7 @@ export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
         createdAt: props.createdAt ?? new Date(),
         isBanned: props.isBanned ?? false,
       },
-      id
+      id,
     );
 
     return adoptionCandidateContent;
@@ -40,17 +39,19 @@ export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
   private touch() {
     this.props.updatedAt = new Date();
   }
-  
- update(propsReq: Pick<AdoptionCandidateProps, "name" | "phone" | "identityUrl">) {
-  this.props.name = propsReq.name;
-  this.props.phone = propsReq.phone;
-  this.props.identityUrl = propsReq.identityUrl;
 
-  this.touch();
-}
-  banned(propsReq: Pick<AdoptionCandidateProps, "bannedReason" | "isBanned">){
-    this.props.bannedReason =  propsReq.bannedReason
-    this.props.isBanned = propsReq.isBanned
+  update(
+    propsReq: Pick<AdoptionCandidateProps, 'name' | 'phone' | 'identityUrl'>,
+  ) {
+    this.props.name = propsReq.name;
+    this.props.phone = propsReq.phone;
+    this.props.identityUrl = propsReq.identityUrl;
+
+    this.touch();
+  }
+  banned(propsReq: Pick<AdoptionCandidateProps, 'bannedReason' | 'isBanned'>) {
+    this.props.bannedReason = propsReq.bannedReason;
+    this.props.isBanned = propsReq.isBanned;
   }
 
   // GETTERS

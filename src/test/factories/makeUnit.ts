@@ -1,5 +1,8 @@
-import { Units, UnitProps } from '@/domain/companyUnits/enterprise/entities/unity'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import {
+  Units,
+  UnitProps,
+} from '@/domain/companyUnits/enterprise/entities/unity';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 export function makeUnit(
   override: Partial<UnitProps> = {},
@@ -14,8 +17,8 @@ export function makeUnit(
       managerId: new UniqueEntityId(),
       ...override,
     },
-    id
-  )
+    id,
+  );
 
-  return unit
+  return unit;
 }

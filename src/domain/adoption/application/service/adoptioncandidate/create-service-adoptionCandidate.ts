@@ -1,8 +1,7 @@
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { AdoptionCandidate } from "@/domain/adoption/enterprise/entities/adoptionCandidate";
-import { Either, right } from "@/core/either";
-import { RepositoriesAdoptionCandidate } from "../../repositories/adoptioncandidate";
-import { CPF } from "@/domain/adoption/enterprise/entities/value-objects/cpf";
+import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
+import { Either, right } from '@/core/either';
+import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
+import { CPF } from '@/domain/adoption/enterprise/entities/value-objects/cpf';
 
 interface CreateAdoptionCandidateServiceRequest {
   name: string;
@@ -18,7 +17,7 @@ type CreateAdoptionCandidateServiceResponse = Either<
 
 export class ServiceCreateAdoptionCandidate {
   constructor(
-    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate
+    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate,
   ) {}
 
   async execute({
@@ -28,7 +27,7 @@ export class ServiceCreateAdoptionCandidate {
     phone,
   }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
     const adoptioncandidate = AdoptionCandidate.create({
-      cpf:CPF.create(cpf), // normaliza po cpf para ficar padrao sempre
+      cpf: CPF.create(cpf), // normaliza po cpf para ficar padrao sempre
       name,
       phone,
       identityUrl,

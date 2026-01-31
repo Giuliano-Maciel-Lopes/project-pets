@@ -1,19 +1,18 @@
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
-import { UpdatePetProps } from "./types";
-import { AggregateRoot } from "@/core/entities/aggregate-root";
-import { PetAttachment } from "./petsAttachment";
-import { PetAttachmentlist } from "./petsAttachmentList";
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
+import { UpdatePetProps } from './types';
+import { AggregateRoot } from '@/core/entities/aggregate-root';
+import { PetAttachmentlist } from './petsAttachmentList';
 
 export enum PetStatus {
-  AVAILABLE = "available",
-  UNAVAILABLE = "unavailable",
-  ANALYSIS = "analysis",
+  AVAILABLE = 'available',
+  UNAVAILABLE = 'unavailable',
+  ANALYSIS = 'analysis',
 }
 
 export enum PetSex {
-  MALE = "male",
-  FEMALE = "female",
+  MALE = 'male',
+  FEMALE = 'female',
 }
 
 export interface PetProps {
@@ -36,9 +35,9 @@ export class Pets extends AggregateRoot<PetProps> {
   static create(
     props: Optional<
       PetProps,
-      "createdAt" | "status" | "isActive" | "attachment"
+      'createdAt' | 'status' | 'isActive' | 'attachment'
     >,
-    id?: UniqueEntityId
+    id?: UniqueEntityId,
   ) {
     const petsContent = new Pets(
       {
@@ -48,7 +47,7 @@ export class Pets extends AggregateRoot<PetProps> {
         isActive: props.isActive ?? true,
         attachment: props.attachment ?? new PetAttachmentlist(),
       },
-      id
+      id,
     );
     return petsContent;
   }

@@ -1,11 +1,10 @@
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
-import { AdoptionCandidate } from "@/domain/adoption/enterprise/entities/adoptionCandidate";
-import { Either, left, right } from "@/core/either";
-import { RepositoriesAdoptionCandidate } from "../../repositories/adoptioncandidate";
-
+import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
+import { Either, left, right } from '@/core/either';
+import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 
 interface CreateAdoptionCandidateServiceRequest {
-  id:string
+  id: string;
 }
 
 type CreateAdoptionCandidateServiceResponse = Either<
@@ -15,18 +14,18 @@ type CreateAdoptionCandidateServiceResponse = Either<
 
 export class ServiceFindByIdAdoptionCandidate {
   constructor(
-    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate
+    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate,
   ) {}
 
   async execute({
-   id
+    id,
   }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
-  const adoptionCandidate =  await this.repositoriesAdoptionCandidate.findById(id)
+    const adoptionCandidate =
+      await this.repositoriesAdoptionCandidate.findById(id);
 
-  if(!adoptionCandidate){
-    return left(new NotFoundError("adoptioncanditate"))
-  }
-    
+    if (!adoptionCandidate) {
+      return left(new NotFoundError('adoptioncanditate'));
+    }
 
     return right({ adoptionCandidate });
   }

@@ -1,4 +1,4 @@
-import { AdoptionCandidate } from "../../enterprise/entities/adoptionCandidate";
+import { AdoptionCandidate } from '../../enterprise/entities/adoptionCandidate';
 
 export interface RepositoriesAdoptionCandidate {
   findById(id: string): Promise<AdoptionCandidate | null>;

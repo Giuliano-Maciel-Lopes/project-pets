@@ -1,10 +1,10 @@
-import { Either, left, right } from "@/core/either";
+import { Either, left, right } from '@/core/either';
 import {
   Adoption,
   AdoptionStatus,
-} from "@/domain/adoption/enterprise/entities/adoption";
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
-import { RepositoriesAdoption } from "../../repositories/adoption";
+} from '@/domain/adoption/enterprise/entities/adoption';
+import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { RepositoriesAdoption } from '../../repositories/adoption';
 interface StatusAdoptionServiceRequest {
   id: string;
   status: AdoptionStatus;
@@ -25,11 +25,11 @@ export class ServiceStatusAdoption {
     const adoption = await this.repositoriesAdoptions.findById(id);
 
     if (!adoption) {
-      return left(new NotFoundError("adoption"));
+      return left(new NotFoundError('adoption'));
     }
     adoption.setStatus(status);
 
-    this.repositoriesAdoptions.update(adoption)
+    await this.repositoriesAdoptions.update(adoption);
 
     return right({ adoption });
   }

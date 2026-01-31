@@ -1,9 +1,8 @@
-import { Either, left, right } from "@/core/either";
-import { User } from "../../enterprise/entities/users";
-import { RepositoriesUser } from "../repositories/repositoriesUser";
-import { WrongCredentialsError } from "../../erros/wrong-credentials-error";
-import { HashComparer } from "../encryption/hash-comparer";
-import { EncrypterToken } from "../encryption/encrypterToken";
+import { Either, left, right } from '@/core/either';
+import { RepositoriesUser } from '../repositories/repositoriesUser';
+import { WrongCredentialsError } from '../../erros/wrong-credentials-error';
+import { HashComparer } from '../encryption/hash-comparer';
+import { EncrypterToken } from '../encryption/encrypterToken';
 
 interface AuthenticateUserServiceRequest {
   password: string;
@@ -19,7 +18,7 @@ export class ServiceAuthenticateUser {
   constructor(
     private repositorieUser: RepositoriesUser,
     private hashcomparer: HashComparer,
-    private encrypterToken: EncrypterToken
+    private encrypterToken: EncrypterToken,
   ) {}
 
   async execute({
@@ -32,7 +31,7 @@ export class ServiceAuthenticateUser {
       user && (await this.hashcomparer.compare(password, user.password));
 
     if (!user || !isPasswordValid) {
-      return left(new WrongCredentialsError()); // eamil ou senha invalido  
+      return left(new WrongCredentialsError()); // eamil ou senha invalido
     }
 
     const accesToken = await this.encrypterToken.encryptToken({

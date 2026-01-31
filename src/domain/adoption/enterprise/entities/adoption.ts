@@ -1,14 +1,13 @@
-import { AggregateRoot } from "@/core/entities/aggregate-root";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
-import { CreateAdoptionEvent } from "../events/create-adoption";
-import { DomainEvents } from "@/core/events/domain-events";
-import { SetStatusEvent } from "../events/setStatus-Adoption";
+import { AggregateRoot } from '@/core/entities/aggregate-root';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
+import { CreateAdoptionEvent } from '../events/create-adoption';
+import { SetStatusEvent } from '../events/setStatus-Adoption';
 
 export enum AdoptionStatus {
-  PENDING = "PENDING", // aqui vai abrir o requerimento para analise de documento
-  APPROVED = "APPROVED", // resposta se ta aprovado  ou nao
-  REJECTED = "REJECTED",
+  PENDING = 'PENDING', // aqui vai abrir o requerimento para analise de documento
+  APPROVED = 'APPROVED', // resposta se ta aprovado  ou nao
+  REJECTED = 'REJECTED',
 }
 
 export interface AdoptionProps {
@@ -22,8 +21,8 @@ export interface AdoptionProps {
 
 export class Adoption extends AggregateRoot<AdoptionProps> {
   static create(
-    props: Optional<AdoptionProps, "createdAt" | "status">,
-    id?: UniqueEntityId
+    props: Optional<AdoptionProps, 'createdAt' | 'status'>,
+    id?: UniqueEntityId,
   ) {
     const adoptionContent = new Adoption(
       {
@@ -31,7 +30,7 @@ export class Adoption extends AggregateRoot<AdoptionProps> {
         createdAt: props.createdAt ?? new Date(),
         status: props.status ?? AdoptionStatus.PENDING,
       },
-      id
+      id,
     );
     const isNewAdoption = !id;
 
@@ -46,10 +45,10 @@ export class Adoption extends AggregateRoot<AdoptionProps> {
   }
 
   setStatus(status: AdoptionStatus) {
-    this.props.status = status
+    this.props.status = status;
     this.touch();
-    
-     this.addDomainEvent(new SetStatusEvent(this));
+
+    this.addDomainEvent(new SetStatusEvent(this));
   }
   get petId() {
     return this.props.petId;

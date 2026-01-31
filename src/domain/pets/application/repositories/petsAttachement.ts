@@ -1,6 +1,6 @@
-import { PetAttachment } from "../../enterprise/entity/petsAttachment"
+import { PetAttachment } from '../../enterprise/entity/petsAttachment';
 
 export interface RepositoryPetAttachments {
-  findManyByPetId(petId: string): Promise<PetAttachment[]>
-  deleteManyByPetId(petId: string): Promise<void>
+  findManyByPetId(petId: string): Promise<PetAttachment[]>;
+  deleteManyByPetId(petId: string): Promise<void>;
 }

@@ -1,16 +1,16 @@
-import { CandidateBannedError } from "../errro/candidateBannedError";
-import { CandidateMustNotBeBannedPolicy } from "./CantidadeIsBannedPolicy";
-import { makeCandidate } from "@/test/factories/makeCandidate";
-import { makePolicyContext } from "@/test/police/makePoliceConext";
+import { CandidateBannedError } from '../errro/candidateBannedError';
+import { CandidateMustNotBeBannedPolicy } from './CantidadeIsBannedPolicy';
+import { makeCandidate } from '@/test/factories/makeCandidate';
+import { makePolicyContext } from '@/test/police/makePoliceConext';
 
-describe("Policy de Candidato Banido", () => {
+describe('Policy de Candidato Banido', () => {
   let policy: CandidateMustNotBeBannedPolicy;
 
   beforeEach(() => {
     policy = new CandidateMustNotBeBannedPolicy();
   });
 
-  it("deve retornar erro se o candidato estiver banido", () => {
+  it('deve retornar erro se o candidato estiver banido', () => {
     const candidate = makeCandidate({ isBanned: true });
 
     const resultado = policy.validate(makePolicyContext({ candidate }));
@@ -19,7 +19,7 @@ describe("Policy de Candidato Banido", () => {
     expect(resultado.value).toBeInstanceOf(CandidateBannedError);
   });
 
-  it("deve passar se o candidato NÃO estiver banido", () => {
+  it('deve passar se o candidato NÃO estiver banido', () => {
     const candidate = makeCandidate({ isBanned: false });
 
     const resultado = policy.validate(makePolicyContext({ candidate }));

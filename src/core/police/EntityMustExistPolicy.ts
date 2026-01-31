@@ -1,15 +1,19 @@
-import { left, right, Either } from "@/core/either";
-import { Policy } from "./policy";
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
-import { PolicyContextEntity } from "./AdoptionPolicyContext";
+import { left, right, Either } from '@/core/either';
+import { Policy } from './policy';
+import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { PolicyContextEntity } from './AdoptionPolicyContext';
 
-export class EntityMustExistPolicy<Entity>
-  implements Policy<PolicyContextEntity, NotFoundError>
-{
+export class EntityMustExistPolicy<Entity> implements Policy<
+  PolicyContextEntity,
+  NotFoundError
+> {
   private entityGetter: (context: PolicyContextEntity) => Entity | null;
   private entityName: string;
 
-  constructor(entityName: string, entityGetter: (context: PolicyContextEntity) => Entity | null) {
+  constructor(
+    entityName: string,
+    entityGetter: (context: PolicyContextEntity) => Entity | null,
+  ) {
     this.entityName = entityName;
     this.entityGetter = entityGetter;
   }

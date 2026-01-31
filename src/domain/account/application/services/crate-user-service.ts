@@ -1,8 +1,8 @@
-import { Either, left, right } from "@/core/either";
-import { User } from "../../enterprise/entities/users";
-import { RepositoriesUser } from "../repositories/repositoriesUser";
-import { ExystUserWitchEmailError } from "../../erros/exisistyUserwithEmail";
-import { HashGenerator } from "../encryption/hash-generator";
+import { Either, left, right } from '@/core/either';
+import { User } from '../../enterprise/entities/users';
+import { RepositoriesUser } from '../repositories/repositoriesUser';
+import { ExystUserWitchEmailError } from '../../erros/exisistyUserwithEmail';
+import { HashGenerator } from '../encryption/hash-generator';
 
 interface CreateUserServiceRequest {
   name: string;
@@ -18,7 +18,7 @@ type CreateUserServiceResponse = Either<
 export class ServiceCreateUser {
   constructor(
     private repositorieUser: RepositoriesUser,
-    private hashGenerator: HashGenerator
+    private hashGenerator: HashGenerator,
   ) {}
 
   async execute({
@@ -32,11 +32,11 @@ export class ServiceCreateUser {
       return left(new ExystUserWitchEmailError());
     }
 
-   const hashPassword =  await this.hashGenerator.hash(password)
+    const hashPassword = await this.hashGenerator.hash(password);
 
-    const user = User.create({ email, name, password:hashPassword });
+    const user = User.create({ email, name, password: hashPassword });
 
-   await this.repositorieUser.create(user)
+    await this.repositorieUser.create(user);
     return right({ user });
   }
 }

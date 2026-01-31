@@ -1,20 +1,20 @@
-import { InMemoryRepositoriesAdoptionCandidate } from "@/test/repositories/in-memory-adoptionCandidate";
-import { ServiceBannedAdoptionCandidate } from "./banned-service-adoptionCandidate";
-import { makeAdoptionCandidate } from "@/test/factories/makeAdoptionCandidate";
+import { InMemoryRepositoriesAdoptionCandidate } from '@/test/repositories/in-memory-adoptionCandidate';
+import { ServiceBannedAdoptionCandidate } from './banned-service-adoptionCandidate';
+import { makeAdoptionCandidate } from '@/test/factories/makeAdoptionCandidate';
 
 let inMemoryRepositoriesAdoptionCandidate: InMemoryRepositoriesAdoptionCandidate;
 let sut: ServiceBannedAdoptionCandidate;
 
-describe("AdoptionCandidate Service", () => {
+describe('AdoptionCandidate Service', () => {
   beforeEach(() => {
     inMemoryRepositoriesAdoptionCandidate =
       new InMemoryRepositoriesAdoptionCandidate();
     sut = new ServiceBannedAdoptionCandidate(
-      inMemoryRepositoriesAdoptionCandidate
+      inMemoryRepositoriesAdoptionCandidate,
     );
   });
 
-  it("deve atualizar um candidate corretamente", async () => {
+  it('deve atualizar um candidate corretamente', async () => {
     const adoptionCandidate = makeAdoptionCandidate({
       isBanned: false,
     });
@@ -22,7 +22,7 @@ describe("AdoptionCandidate Service", () => {
 
     const result = await sut.execute({
       id: adoptionCandidate.id.toString(),
-      bannedReason: "usuario foi banido devido a desrepeito com funcionario",
+      bannedReason: 'usuario foi banido devido a desrepeito com funcionario',
       isBanned: true,
     });
 
@@ -33,11 +33,11 @@ describe("AdoptionCandidate Service", () => {
 
       expect(banneddCandidate.id).toBeTruthy();
       expect(inMemoryRepositoriesAdoptionCandidate.items[0]).toEqual(
-        banneddCandidate
+        banneddCandidate,
       );
       expect(banneddCandidate.isBanned).toBe(true);
       expect(banneddCandidate.bannedReason).toBe(
-        "usuario foi banido devido a desrepeito com funcionario"
+        'usuario foi banido devido a desrepeito com funcionario',
       );
     }
   });

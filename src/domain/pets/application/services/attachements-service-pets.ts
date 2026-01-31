@@ -1,8 +1,8 @@
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Pets } from "../../enterprise/entity/pets";
-import { PetAttachment } from "../../enterprise/entity/petsAttachment";
-import { RepositoryPetAttachments } from "../repositories/petsAttachement";
-import { PetAttachmentlist } from "../../enterprise/entity/petsAttachmentList";
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Pets } from '../../enterprise/entity/pets';
+import { PetAttachment } from '../../enterprise/entity/petsAttachment';
+import { RepositoryPetAttachments } from '../repositories/petsAttachement';
+import { PetAttachmentlist } from '../../enterprise/entity/petsAttachmentList';
 
 interface Props {
   pet: Pets;
@@ -14,18 +14,18 @@ export class ServicePetAttachments {
 
   private buildAttachments(
     pet: Pets,
-    attachmentIds: string[]
+    attachmentIds: string[],
   ): PetAttachment[] {
     return attachmentIds.map((attachmentId) =>
       PetAttachment.create({
         attachmentId: new UniqueEntityId(attachmentId),
         petId: pet.id,
-      })
+      }),
     );
   }
 
   // CREATE
-  async create({ pet, attachmentIds }: Props): Promise<void> {
+  create({ pet, attachmentIds }: Props) {
     if (attachmentIds.length === 0) return;
 
     const attachments = this.buildAttachments(pet, attachmentIds);
@@ -47,7 +47,7 @@ export class ServicePetAttachments {
     pet.setattachment(attachmentsList);
   }
 
-  //delete ainda vou fazer 
+  //delete ainda vou fazer
   async removeAll(pet: Pets): Promise<void> {
     await this.petAttachmentsRepository.deleteManyByPetId(pet.id.toString());
 

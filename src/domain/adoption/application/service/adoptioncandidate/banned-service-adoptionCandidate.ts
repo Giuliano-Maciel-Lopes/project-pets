@@ -1,7 +1,7 @@
-import { AdoptionCandidate } from "@/domain/adoption/enterprise/entities/adoptionCandidate";
-import { Either, left, right } from "@/core/either";
-import { RepositoriesAdoptionCandidate } from "../../repositories/adoptioncandidate";
-import { NotFoundError } from "@/core/erros/erro/not-found-items";
+import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
+import { Either, left, right } from '@/core/either';
+import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
+import { NotFoundError } from '@/core/erros/erro/not-found-items';
 
 interface BannedAdoptionCandidateServiceRequest {
   id: string;
@@ -16,7 +16,7 @@ type BannedAdoptionCandidateServiceResponse = Either<
 
 export class ServiceBannedAdoptionCandidate {
   constructor(
-    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate
+    private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate,
   ) {}
 
   async execute({
@@ -24,12 +24,11 @@ export class ServiceBannedAdoptionCandidate {
     bannedReason,
     isBanned,
   }: BannedAdoptionCandidateServiceRequest): Promise<BannedAdoptionCandidateServiceResponse> {
-    const adoptionCandidate = await this.repositoriesAdoptionCandidate.findById(
-      id
-    );
+    const adoptionCandidate =
+      await this.repositoriesAdoptionCandidate.findById(id);
 
     if (!adoptionCandidate) {
-      return left(new NotFoundError("adoption canditade"));
+      return left(new NotFoundError('adoption canditade'));
     }
 
     adoptionCandidate.banned({ isBanned, bannedReason });

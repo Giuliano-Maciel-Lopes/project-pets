@@ -1,11 +1,11 @@
-import { Entity } from "@/core/entities/entitty";
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
+import { Entity } from '@/core/entities/entitty';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Optional } from '@/core/types/optional';
 
 // Enum para as roles
 export enum Role {
-  ADOPTER = "ADOPTER",
-  ADMIN = "ADMIN",
+  ADOPTER = 'ADOPTER',
+  ADMIN = 'ADMIN',
 }
 
 export interface UserProps {
@@ -19,8 +19,8 @@ export interface UserProps {
 
 export class User extends Entity<UserProps> {
   static create(
-    props: Optional<UserProps, "createdAt" | "role">,
-    id?: UniqueEntityId
+    props: Optional<UserProps, 'createdAt' | 'role'>,
+    id?: UniqueEntityId,
   ) {
     const usercontent = new User(
       {
@@ -28,7 +28,7 @@ export class User extends Entity<UserProps> {
         createdAt: props.createdAt ?? new Date(),
         role: props.role ?? Role.ADOPTER,
       },
-      id
+      id,
     );
 
     return usercontent;
@@ -37,7 +37,6 @@ export class User extends Entity<UserProps> {
   private touch() {
     this.props.updatedAt = new Date();
   }
-
 
   get name() {
     return this.props.name;

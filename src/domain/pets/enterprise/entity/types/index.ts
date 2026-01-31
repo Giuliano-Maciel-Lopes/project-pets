@@ -1,8 +1,8 @@
-import { UniqueEntityId } from "@/core/entities/unique-entity-id";
-import { PetSex } from "../pets";
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { PetSex } from '../pets';
 
 export interface UpdatePetProps {
-  id:UniqueEntityId
+  id: UniqueEntityId;
   name: string;
   species: string;
   unitId: UniqueEntityId;
