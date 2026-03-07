@@ -35,3 +35,6 @@ data
 /generated/prisma
 
 /generated/prisma
+
+private.key.b64
+public.key.b64
