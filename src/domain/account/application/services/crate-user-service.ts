@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { User } from '../../enterprise/entities/users';
 import { RepositoriesUser } from '../repositories/repositoriesUser';
@@ -15,6 +16,7 @@ type CreateUserServiceResponse = Either<
   { user: User }
 >;
 
+@Injectable()
 export class ServiceCreateUser {
   constructor(
     private repositorieUser: RepositoriesUser,

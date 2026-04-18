@@ -16,21 +16,138 @@ datasource db {
 }
 
 enum Role {
-    ADOPTER
-    ADMIN
-
+  ADOPTER
+  ADMIN
 }
 
+enum PetStatus {
+  AVAILABLE
+  UNAVAILABLE
+  ANALYSIS
+}
+
+enum PetSex {
+  MALE
+  FEMALE
+}
+
+enum AdoptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
+  id        String   @id @default(uuid())
   name      String
+  email     String   @unique
   password  String
   role      Role     @default(ADOPTER)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("users") 
+  units     Unit[]
+  adoptions Adoption[]
+
+  @@map("users")
 }
 
+model Unit {
+  id          String  @id @default(uuid())
+  name        String
+  address     String
+  city        String
+  state       String
+  slug        String  @unique
+
+  isPrincipal Boolean @default(false)
+  isActive    Boolean @default(true)
+
+  managerId   String
+  manager     User @relation(fields: [managerId], references: [id])
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  pets        Pet[]
+  adoptions   Adoption[]
+  attachments Attachment[]
+
+  @@map("units")
+}
+
+model Pet {
+  id        String   @id @default(uuid())
+
+  name      String
+  species   String
+  breed     String
+  age       Int?
+  sex       PetSex?
+
+  status    PetStatus @default(AVAILABLE)
+  isActive  Boolean   @default(true)
+
+  unitId    String
+  unit      Unit @relation(fields: [unitId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  attachments Attachment[]
+  adoptions   Adoption[]
+
+  @@map("pets")
+}
+
+model Attachment {
+  id     String @id @default(uuid())
+  title  String
+  link   String
+
+  petId  String?
+  unitId String?
+
+  pet  Pet?  @relation(fields: [petId], references: [id])
+  unit Unit? @relation(fields: [unitId], references: [id])
+
+  @@map("attachments")
+}
+
+model Adoption {
+  id String @id @default(uuid())
+
+  petId String
+  pet   Pet @relation(fields: [petId], references: [id])
+
+  adopterId String
+  adopter   User @relation(fields: [adopterId], references: [id])
+
+  unitId String
+  unit   Unit @relation(fields: [unitId], references: [id])
+
+  status AdoptionStatus @default(PENDING)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("adoptions")
+}
+
+model AdoptionCandidate {
+  id           String @id @default(uuid())
+
+  name         String
+  cpf          String
+  phone        String
+  identityUrl  String
+
+  isBanned     Boolean @default(false)
+  bannedReason String?
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("adoption_candidates")
+}
