@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { RepositoriesUser } from '../repositories/repositoriesUser';
 import { WrongCredentialsError } from '../../erros/wrong-credentials-error';
@@ -14,6 +15,7 @@ type AuthenticateUserServiceResponse = Either<
   { accesToken: string }
 >;
 
+@Injectable()
 export class ServiceAuthenticateUser {
   constructor(
     private repositorieUser: RepositoriesUser,

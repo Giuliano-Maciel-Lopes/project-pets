@@ -61,4 +61,15 @@ export class User extends Entity<UserProps> {
   get updatedAt() {
     return this.props.updatedAt;
   }
+
+  toJSON() {
+    return {
+      id: this.id.toString(),
+      name: this.name,
+      email: this.email,
+      role: this.role,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
 }
