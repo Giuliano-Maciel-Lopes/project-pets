@@ -1,4 +1,5 @@
 import { Body, ConflictException, Controller, Post, UsePipes } from '@nestjs/common';
+import { Public } from '@/infra/auth/public';
 import { ServiceCreateUser } from '@/domain/account/application/services/crate-user-service';
 import { AccountcreateSchema, CreateAccountInput } from '../schemas/create-user-schema';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
@@ -8,6 +9,7 @@ export class ControllerCreateAccount {
   constructor(private createUser: ServiceCreateUser) {}
 
   @Post()
+  @Public()
   @UsePipes(new ZodValidationPipe(AccountcreateSchema))
   async handle(@Body() body: CreateAccountInput) {
     const { email, name, password } = body;

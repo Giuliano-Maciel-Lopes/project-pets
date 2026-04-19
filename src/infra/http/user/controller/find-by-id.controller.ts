@@ -3,12 +3,15 @@ import { ServiceFindUserById } from '@/domain/account/application/services/find-
 import { UserPresenter } from '../presenters/user-presenter';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { uuidParamSchema } from '../../schemas/uuid-param.schema';
+import { Roles } from '@/infra/auth/roles';
+import { Role } from '@/domain/account/enterprise/entities/users';
 
 @Controller('/users')
 export class ControllerFindUserById {
   constructor(private findUserById: ServiceFindUserById) {}
 
   @Get(':id')
+  @Roles(Role.ADMIN)
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
   ) {

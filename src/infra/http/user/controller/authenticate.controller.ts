@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { Public } from '@/infra/auth/public';
 import { Response } from 'express';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { ServiceAuthenticateUser } from '@/domain/account/application/services/authenticate-service';
@@ -9,6 +10,7 @@ export class ControllerAuthenticate {
   constructor(private authenticate: ServiceAuthenticateUser) {}
 
   @Post()
+  @Public()
   async handle(
     @Body(new ZodValidationPipe(authenticateSchema)) body: AuthenticateInput,
     @Res({ passthrough: true }) res: Response,

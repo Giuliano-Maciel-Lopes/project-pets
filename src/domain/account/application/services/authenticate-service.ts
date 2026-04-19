@@ -38,6 +38,7 @@ export class ServiceAuthenticateUser {
 
     const accesToken = await this.encrypterToken.encryptToken({
       sub: user.id.toString(),
+      role: user.role,
     });
 
     return right({ accesToken });
