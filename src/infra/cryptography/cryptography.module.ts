@@ -14,7 +14,7 @@ const providersCryp = [
 ]
 
 @Module({
-    providers: [...providersCryp],
-  exports: [...providersCryp.map(p => p.provide)], 
+  providers: [...providersCryp],
+  exports: [...providersCryp.map(p => p.provide)],
 })
 export class CryptographyModule{}
