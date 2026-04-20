@@ -3,6 +3,7 @@ import { ControllerCreateAccount } from './controller/create-user.controller';
 import { ControllerFindUserById } from './controller/find-by-id.controller';
 import { ControllerFindUserByEmail } from './controller/find-by-email.controller';
 import { ControllerAuthenticate } from './controller/authenticate.controller';
+import { ControllerLogout } from './controller/logout.controller';
 import { ServiceCreateUser } from '@/domain/account/application/services/crate-user-service';
 import { ServiceFindUserById } from '@/domain/account/application/services/find-by-id-service';
 import { ServiceFindUserByEmail } from '@/domain/account/application/services/find-by-email-service';
@@ -17,6 +18,7 @@ import { CryptographyModule } from '@/infra/cryptography/cryptography.module';
     ControllerFindUserById,
     ControllerFindUserByEmail,
     ControllerAuthenticate,
+    ControllerLogout,
   ],
   providers: [
     ServiceCreateUser,

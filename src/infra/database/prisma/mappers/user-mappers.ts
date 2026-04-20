@@ -18,9 +18,9 @@ export class MapperPrismaUser{
         name: raw.name,
         email: raw.email,
         password: raw.password,
+        role: raw.role as any,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
-        //role padrao adopter 
       },
       new UniqueEntityId(raw.id)
     )

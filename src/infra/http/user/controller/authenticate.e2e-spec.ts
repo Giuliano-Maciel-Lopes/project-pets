@@ -6,6 +6,7 @@ import request from 'supertest';
 import { hash } from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { DataBaseModule } from '@/infra/database/database.module';
+import { getCookies } from '@/test/utils/get-cookie';
 
 describe('ControllerAuthenticate (e2e)', () => {
   let app: INestApplication;
@@ -40,10 +41,10 @@ describe('ControllerAuthenticate (e2e)', () => {
     expect(res.statusCode).toBe(201);
     expect(res.body.message).toBe('Autenticado com sucesso');
 
-    const cookie = res.headers['set-cookie'] as string[];
-    expect(cookie).toBeDefined();
-    expect(cookie[0]).toContain('access_token');
-    expect(cookie[0]).toContain('HttpOnly');
+    const cookies = getCookies(res);
+    expect(cookies.length).toBeGreaterThan(0);
+    expect(cookies[0]).toContain('access_token');
+    expect(cookies[0]).toContain('HttpOnly');
   });
 
   it('POST /sessions — deve retornar 401 com credenciais erradas', async () => {

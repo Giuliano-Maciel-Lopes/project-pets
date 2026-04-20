@@ -20,8 +20,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any) {
+  handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
+      console.error('[JwtAuthGuard] err:', err?.message ?? err, '| user:', user, '| info:', info?.message ?? info);
       throw new UnauthorizedException('Token inválido ou ausente');
     }
     return user;

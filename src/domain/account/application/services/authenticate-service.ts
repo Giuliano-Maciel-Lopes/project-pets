@@ -28,7 +28,7 @@ export class ServiceAuthenticateUser {
     password,
   }: AuthenticateUserServiceRequest): Promise<AuthenticateUserServiceResponse> {
     const user = await this.repositorieUser.findByEmail(email);
-
+    console.log('user do banco:', user?.role, user?.email);
     const isPasswordValid =
       user && (await this.hashcomparer.compare(password, user.password));
 
