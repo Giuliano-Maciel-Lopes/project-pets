@@ -18,9 +18,6 @@ export class OnSetStatusAdoption implements EventHandler {
   }
 
   private async SetStatusAdoption({ adoption }: SetStatusEvent) {
-    console.log(
-      'teste de mudança de status quando setado a mudança de estado adoption',
-    );
     if (adoption.status === AdoptionStatus.APPROVED) {
       await this.serviceSetStatusPets.execute({
         id: adoption.petId.toString(),

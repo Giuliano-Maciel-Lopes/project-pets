@@ -24,13 +24,10 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter } as any);
 
 beforeAll(async () => {
-  console.log('antes bd');
-  // Executa a migração para o schema único
   execSync('npx prisma migrate deploy', { stdio: 'inherit' });
-});
+}, 30000);
 
 afterAll(async () => {
-  console.log('depois bd');
   // Deleta o schema após os testes
   await prisma.$executeRawUnsafe(
     `DROP SCHEMA IF EXISTS "${schemaId}" CASCADE;`,

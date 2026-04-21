@@ -18,7 +18,6 @@ export class OncreateAdoption implements EventHandler {
   }
 
   private async handleStatusPet({ adoption }: CreateAdoptionEvent) {
-    console.log(adoption);
     await this.serviceSetStatusPets.execute({
       id: adoption.petId.toString(),
       status: PetStatus.ANALYSIS,
