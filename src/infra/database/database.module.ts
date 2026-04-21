@@ -8,6 +8,8 @@ import { PrismaRepositoriesPets } from "./prisma/repositories.ts/pisma-rep-pets"
 import { RepositoriesPets } from "@/domain/pets/application/repositories/pets";
 import { PrismaRepositoryPetAttachments } from "./prisma/repositories.ts/prisma-rep-pets-Attachement";
 import { RepositoryPetAttachments } from "@/domain/pets/application/repositories/petsAttachement";
+import { PrismaAttachmentRepository } from "./prisma/repositories.ts/prisma-rep-attachment";
+import { AttachmentRepository } from "@/domain/Attachment/application/repositories/attachment-repository";
 
 const DatabaseUtils = [
   PrismaService,
@@ -15,6 +17,7 @@ const DatabaseUtils = [
   { provide: RepositoriesUnits, useClass: PrismaRepositoriesUnit },
   { provide: RepositoriesPets, useClass: PrismaRepositoriesPets },
   { provide: RepositoryPetAttachments, useClass: PrismaRepositoryPetAttachments },
+  { provide: AttachmentRepository, useClass: PrismaAttachmentRepository },
 ];
 
 

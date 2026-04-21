@@ -22,7 +22,7 @@
     },
     "types": [
       "vitest/globals",
-     // "multer"
+      "multer"
     ]
   }
 }
