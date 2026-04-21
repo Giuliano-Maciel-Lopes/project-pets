@@ -1,18 +1,12 @@
+import { Injectable } from '@nestjs/common';
 import { Units } from '../../enterprise/entities/unity';
-import { RepositoriesUnits } from '../repositories/unistsRepositories';
+import { RepositoriesUnits, ListUnitsFilters, PaginatedUnits } from '../repositories/unistsRepositories';
 
-//interface ListUnitServiceRequest {}
-
-interface ListUnitServiceResponse {
-  units: Units[];
-}
-
-export class ServiceFindUnitById {
+@Injectable()
+export class ServiceListUnits {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 
-  async execute(): Promise<ListUnitServiceResponse> {
-    const units = await this.repositoriesUnits.list();
-
-    return { units };
+  async execute(filters: ListUnitsFilters): Promise<PaginatedUnits> {
+    return this.repositoriesUnits.list(filters);
   }
 }

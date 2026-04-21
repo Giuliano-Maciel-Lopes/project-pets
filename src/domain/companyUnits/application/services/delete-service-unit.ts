@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
 import { Either, left, right } from '@/core/either';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
@@ -8,6 +9,7 @@ interface deleteUnitServiceRequest {
 
 type deleteUnitServiceResponse = Either<NotFoundError, null>;
 
+@Injectable()
 export class ServicedeleteUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

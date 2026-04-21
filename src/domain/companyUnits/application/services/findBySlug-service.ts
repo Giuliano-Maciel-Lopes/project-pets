@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { Units } from '../../enterprise/entities/unity';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
@@ -14,6 +15,7 @@ type FindBySlugUnitServiceResponse = Either<
   }
 >;
 
+@Injectable()
 export class ServiceFindUnitBySlug {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
 
@@ -10,6 +11,7 @@ interface toggleActiveUnitServiceRequest {
 
 type toggleActiveUnitServiceResponse = Either<NotFoundError, null>;
 
+@Injectable()
 export class ServicetoggleActiveUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

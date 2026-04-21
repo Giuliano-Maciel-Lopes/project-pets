@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { left, right } from '@/core/either';
 import { Units } from '../../enterprise/entities/unity';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
@@ -15,6 +16,7 @@ type FindByIdUnitServiceResponse = Either<
   }
 >;
 
+@Injectable()
 export class ServiceFindUnitById {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

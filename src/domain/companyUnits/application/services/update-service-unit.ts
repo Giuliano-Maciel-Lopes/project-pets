@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { createUniqueUnitSlug } from '../../../../core/utils/createUniqueUnitSlug';
@@ -15,6 +16,7 @@ interface updateUnitServiceRequest {
 
 type updateUnitServiceResponse = Either<NotFoundError, null>;
 
+@Injectable()
 export class ServiceUpdateUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

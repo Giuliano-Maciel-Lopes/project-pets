@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { createUniqueUnitSlug } from '../../../../core/utils/createUniqueUnitSlug';
 import { Units } from '../../enterprise/entities/unity';
 import { RepositoriesUnits } from '../repositories/unistsRepositories';
@@ -19,6 +20,7 @@ type CreateUnitServiceResponse = Either<
   { unit: Units }
 >;
 
+@Injectable()
 export class ServiceCreateUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 

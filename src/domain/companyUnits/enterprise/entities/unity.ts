@@ -3,6 +3,12 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 import { Slug } from '@/core/value-objects/slug';
 
+export interface UnitAttachment {
+  id: string;
+  title: string;
+  link: string;
+}
+
 export interface UnitProps {
   name: string;
   address: string;
@@ -13,7 +19,8 @@ export interface UnitProps {
   slug: Slug;
   createdAt: Date;
   updatedAt?: Date;
-  managerId: UniqueEntityId; // dono da unidade
+  managerId: UniqueEntityId;
+  attachments?: UnitAttachment[];
 }
 
 export class Units extends Entity<UnitProps> {
@@ -60,6 +67,9 @@ export class Units extends Entity<UnitProps> {
   }
   get managerId() {
     return this.props.managerId;
+  }
+  get attachments() {
+    return this.props.attachments ?? [];
   }
   get createdAt() {
     return this.props.createdAt;
