@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, right } from '@/core/either';
 import { Pets, PetSex, PetStatus } from '../../enterprise/entity/pets';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
@@ -17,6 +18,7 @@ interface CreatePetServiceRequest {
 
 type CreatePetServiceResponse = Either<null, { pet: Pets }>;
 
+@Injectable()
 export class ServiceCreatePets {
   constructor(
     private repositoriesPets: RepositoriesPets,

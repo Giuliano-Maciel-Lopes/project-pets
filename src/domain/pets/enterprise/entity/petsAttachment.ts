@@ -4,6 +4,8 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 export interface PetAttachmentProps {
   petId: UniqueEntityId;
   attachmentId: UniqueEntityId;
+  title?: string;
+  link?: string;
 }
 
 export class PetAttachment extends Entity<PetAttachmentProps> {
@@ -13,6 +15,14 @@ export class PetAttachment extends Entity<PetAttachmentProps> {
 
   get attachmentId() {
     return this.props.attachmentId;
+  }
+
+  get title() {
+    return this.props.title;
+  }
+
+  get link() {
+    return this.props.link;
   }
 
   static create(props: PetAttachmentProps, id?: UniqueEntityId) {

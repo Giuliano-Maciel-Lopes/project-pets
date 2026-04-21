@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Pets } from '../../enterprise/entity/pets';
 import { PetAttachment } from '../../enterprise/entity/petsAttachment';
@@ -9,6 +10,7 @@ interface Props {
   attachmentIds: string[];
 }
 
+@Injectable()
 export class ServicePetAttachments {
   constructor(private petAttachmentsRepository: RepositoryPetAttachments) {}
 

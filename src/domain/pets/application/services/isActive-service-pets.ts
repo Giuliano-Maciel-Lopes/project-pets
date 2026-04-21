@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { Pets } from '../../enterprise/entity/pets';
 import { RepositoriesPets } from '../repositories/pets';
@@ -10,6 +11,7 @@ interface IsActivePetServiceRequest {
 
 type IsActivePetServiceResponse = Either<NotFoundError, { pet: Pets }>;
 
+@Injectable()
 export class ServiceIsActivePets {
   constructor(private repositoriesPets: RepositoriesPets) {}
 
