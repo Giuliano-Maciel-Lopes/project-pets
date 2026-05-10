@@ -5,6 +5,7 @@ import { createPetSchema, CreatePetInput } from '../schemas/create-pet-schema';
 import { PetPresenter } from '../presenters/pet-presenter';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { PetSex } from '@/domain/pets/enterprise/entity/pets';
 
 @Controller('/pets')
 export class ControllerCreatePet {
@@ -14,7 +15,10 @@ export class ControllerCreatePet {
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(createPetSchema))
   async handle(@Body() body: CreatePetInput) {
-    const result = await this.createPet.execute(body);
+    const result = await this.createPet.execute({
+      ...body,
+      sex: body.sex as PetSex | undefined,
+    });
 
     if (result.isLeft()) {
       throw result.value;

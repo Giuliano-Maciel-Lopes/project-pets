@@ -5,6 +5,12 @@ import {
   UseInterceptors,
   BadRequestException,
 } from '@nestjs/common';
+interface MulterFile {
+  originalname: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
+}
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ServiceCreateAttachment } from '@/domain/Attachment/application/services/create-attachment-service';
 import { AttachmentPresenter } from '../presenters/attachment-presenter';
@@ -29,7 +35,7 @@ export class ControllerUploadAttachment {
       },
     }),
   )
-  async handle(@UploadedFile() file: Express.Multer.File) {
+  async handle(@UploadedFile() file: MulterFile) {
     if (!file) {
       throw new BadRequestException('Arquivo não enviado');
     }
