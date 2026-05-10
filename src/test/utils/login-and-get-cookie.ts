@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { hash } from 'bcryptjs';
 import request from 'supertest';
@@ -10,7 +11,7 @@ async function loginAs(
   role: Role,
 ): Promise<ReturnType<typeof request.agent>> {
   const password = 'test-password-123';
-  const email = `helper-${role}-${Date.now()}@test.com`;
+  const email = `helper-${role}-${randomUUID()}@test.com`;
 
   await userFactory.makePrismaUser({ email, password: await hash(password, 8), role });
 

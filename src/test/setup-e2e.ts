@@ -6,21 +6,20 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 config({ path: '.env' });
 
-function generateUniqueDatabaseURL(schemaId: string) {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('Please provide a DATABASE_URL environment variable.');
-  }
-
-  const url = new URL(process.env.DATABASE_URL);
-  url.searchParams.set('schema', schemaId);
-  return url.toString();
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL não definida no .env');
 }
 
-const schemaId = randomUUID();
-// Define a URL antes de criar o PrismaClient
-process.env.DATABASE_URL = generateUniqueDatabaseURL(schemaId);
+const schemaId = `test_${randomUUID().replace(/-/g, '_')}`;
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const url = new URL(process.env.DATABASE_URL);
+url.searchParams.set('schema', schemaId);
+process.env.DATABASE_URL = url.toString();
+
+const adapter = new PrismaPg(
+  { connectionString: process.env.DATABASE_URL },
+  { schema: schemaId },
+);
 const prisma = new PrismaClient({ adapter } as any);
 
 beforeAll(async () => {
@@ -28,9 +27,6 @@ beforeAll(async () => {
 }, 30000);
 
 afterAll(async () => {
-  // Deleta o schema após os testes
-  await prisma.$executeRawUnsafe(
-    `DROP SCHEMA IF EXISTS "${schemaId}" CASCADE;`,
-  );
+  await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE;`);
   await prisma.$disconnect();
 });

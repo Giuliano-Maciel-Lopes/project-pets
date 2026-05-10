@@ -1,4 +1,8 @@
-import { RepositoriesUnits } from '@/domain/companyUnits/application/repositories/unistsRepositories';
+import {
+  RepositoriesUnits,
+  ListUnitsFilters,
+  PaginatedUnits,
+} from '@/domain/companyUnits/application/repositories/unistsRepositories';
 import { Units } from '@/domain/companyUnits/enterprise/entities/unity';
 
 export class InMemoryRepositoriesUnits implements RepositoriesUnits {
@@ -20,8 +24,21 @@ export class InMemoryRepositoriesUnits implements RepositoriesUnits {
     return unit ?? null;
   }
 
-  async list() {
-    return this.items;
+  async list({ name, slug, city, state, isActive, isPrincipal, managerId, page, limit }: ListUnitsFilters): Promise<PaginatedUnits> {
+    let filtered = this.items;
+
+    if (name) filtered = filtered.filter((u) => u.name.toLowerCase().includes(name.toLowerCase()));
+    if (slug) filtered = filtered.filter((u) => u.slug.value.includes(slug));
+    if (city) filtered = filtered.filter((u) => u.city.toLowerCase().includes(city.toLowerCase()));
+    if (state) filtered = filtered.filter((u) => u.state === state);
+    if (isActive !== undefined) filtered = filtered.filter((u) => u.isActive === isActive);
+    if (isPrincipal !== undefined) filtered = filtered.filter((u) => u.isPrincipal === isPrincipal);
+    if (managerId) filtered = filtered.filter((u) => u.managerId.toString() === managerId);
+
+    const total = filtered.length;
+    const units = filtered.slice((page - 1) * limit, page * limit);
+
+    return { units, total, page, limit };
   }
 
   async delete(id: string): Promise<void> {

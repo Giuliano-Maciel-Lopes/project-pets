@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { User, UserProps } from '@/domain/account/enterprise/entities/users';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
@@ -10,8 +11,8 @@ export function makeUser(
 ): User {
   return User.create(
     {
-      email: 'giulindo@gmail.com',
-      name: 'giu',
+      email: `test-${randomUUID()}@test.com`,
+      name: 'test user',
       password: '123456',
       ...override,
     },
