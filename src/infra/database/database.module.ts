@@ -10,6 +10,10 @@ import { PrismaRepositoryPetAttachments } from "./prisma/repositories.ts/prisma-
 import { RepositoryPetAttachments } from "@/domain/pets/application/repositories/petsAttachement";
 import { PrismaAttachmentRepository } from "./prisma/repositories.ts/prisma-rep-attachment";
 import { AttachmentRepository } from "@/domain/Attachment/application/repositories/attachment-repository";
+import { PrismaRepositoriesAdoption } from "./prisma/repositories.ts/prisma-rep-adoptions";
+import { RepositoriesAdoption } from "@/domain/adoption/application/repositories/adoption";
+import { PrismaRepositoriesAdoptionCandidate } from "./prisma/repositories.ts/prisma-rep-adoptionCandidate";
+import { RepositoriesAdoptionCandidate } from "@/domain/adoption/application/repositories/adoptioncandidate";
 
 const DatabaseUtils = [
   PrismaService,
@@ -18,6 +22,8 @@ const DatabaseUtils = [
   { provide: RepositoriesPets, useClass: PrismaRepositoriesPets },
   { provide: RepositoryPetAttachments, useClass: PrismaRepositoryPetAttachments },
   { provide: AttachmentRepository, useClass: PrismaAttachmentRepository },
+  { provide: RepositoriesAdoption, useClass: PrismaRepositoriesAdoption },
+  { provide: RepositoriesAdoptionCandidate, useClass: PrismaRepositoriesAdoptionCandidate },
 ];
 
 

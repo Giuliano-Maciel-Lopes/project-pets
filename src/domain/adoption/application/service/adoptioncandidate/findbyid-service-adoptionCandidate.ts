@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 import { Either, left, right } from '@/core/either';
@@ -12,6 +13,7 @@ type CreateAdoptionCandidateServiceResponse = Either<
   { adoptionCandidate: AdoptionCandidate }
 >;
 
+@Injectable()
 export class ServiceFindByIdAdoptionCandidate {
   constructor(
     private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate,

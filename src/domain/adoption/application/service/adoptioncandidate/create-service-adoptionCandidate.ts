@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 import { Either, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
@@ -15,6 +16,7 @@ type CreateAdoptionCandidateServiceResponse = Either<
   { adoptioncandidate: AdoptionCandidate }
 >;
 
+@Injectable()
 export class ServiceCreateAdoptionCandidate {
   constructor(
     private repositoriesAdoptionCandidate: RepositoriesAdoptionCandidate,

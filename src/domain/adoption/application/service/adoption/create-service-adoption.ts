@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import {
   Adoption,
@@ -27,6 +28,7 @@ interface CreateAdoptionServiceRequest {
 
 type CreateAdoptionServiceResponse = Either<Error, { adoption: Adoption }>;
 
+@Injectable()
 export class ServiceCreateAdoption {
   constructor(
     private repositoriesAdoption: RepositoriesAdoption,

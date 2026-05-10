@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, right } from '@/core/either';
 import { Adoption } from '@/domain/adoption/enterprise/entities/adoption';
 import { RepositoriesAdoption } from '../../repositories/adoption';
@@ -5,6 +6,7 @@ import { RepositoriesAdoption } from '../../repositories/adoption';
 
 type ListAdoptionServiceResponse = Either<null, { adoptions: Adoption[] }>;
 
+@Injectable()
 export class ServiceListAdoption {
   constructor(private repositoriesAdoptions: RepositoriesAdoption) {}
 

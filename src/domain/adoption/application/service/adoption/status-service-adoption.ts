@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import {
   Adoption,
@@ -15,6 +16,7 @@ type StatusAdoptionServiceResponse = Either<
   { adoption: Adoption }
 >;
 
+@Injectable()
 export class ServiceStatusAdoption {
   constructor(private repositoriesAdoptions: RepositoriesAdoption) {}
 

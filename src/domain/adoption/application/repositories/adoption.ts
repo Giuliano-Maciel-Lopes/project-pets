@@ -1,8 +1,8 @@
 import { Adoption } from '../../enterprise/entities/adoption';
 
-export interface RepositoriesAdoption {
-  findById(id: string): Promise<Adoption | null>;
-  create(adoption: Adoption): Promise<void>;
-  update(adoption: Adoption): Promise<void>;
-  list(): Promise<Adoption[]>;
+export abstract class RepositoriesAdoption {
+  abstract findById(id: string): Promise<Adoption | null>;
+  abstract create(adoption: Adoption): Promise<void>;
+  abstract update(adoption: Adoption): Promise<void>;
+  abstract list(): Promise<Adoption[]>;
 }
