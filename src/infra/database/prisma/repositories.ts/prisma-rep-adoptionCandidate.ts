@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { RepositoriesAdoptionCandidate } from '@/domain/adoption/application/repositories/adoptioncandidate';
+import {
+  RepositoriesAdoptionCandidate,
+  ListAdoptionCandidateFilters,
+  PaginatedAdoptionCandidates,
+} from '@/domain/adoption/application/repositories/adoptioncandidate';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 import { MapperPrismaAdoptionCandidate } from '../mappers/adoption-candidate-mapper';
 
@@ -43,5 +47,38 @@ export class PrismaRepositoriesAdoptionCandidate
         bannedReason: candidate.bannedReason ?? null,
       },
     });
+  }
+
+  async list({
+    name,
+    cpf,
+    isBanned,
+    page,
+    limit,
+  }: ListAdoptionCandidateFilters): Promise<PaginatedAdoptionCandidates> {
+    const where: Record<string, unknown> = {};
+
+    if (name) where.name = { contains: name, mode: 'insensitive' };
+    if (cpf) where.cpf = { contains: cpf.replace(/\D/g, '') };
+    if (isBanned !== undefined) where.isBanned = isBanned;
+
+    const skip = (page - 1) * limit;
+
+    const [raws, total] = await Promise.all([
+      this.prisma.adoptionCandidate.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.adoptionCandidate.count({ where }),
+    ]);
+
+    return {
+      candidates: raws.map(MapperPrismaAdoptionCandidate.toDomain),
+      total,
+      page,
+      limit,
+    };
   }
 }

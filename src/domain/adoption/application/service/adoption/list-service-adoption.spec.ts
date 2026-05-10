@@ -11,19 +11,16 @@ describe('Adoption', () => {
     sut = new ServiceListAdoption(inMemoryRepositoriesAdoption);
   });
 
-  it('deve trazer um array   de  adoption  corretamente', async () => {
+  it('deve trazer um array de adoption corretamente', async () => {
     const adoption = makeAdoption();
     const adoption2 = makeAdoption();
 
     await inMemoryRepositoriesAdoption.create(adoption);
     await inMemoryRepositoriesAdoption.create(adoption2);
 
-    const result = await sut.execute();
+    const result = await sut.execute({ page: 1, limit: 25 });
 
-    expect(result.isRight()).toBe(true);
-
-    if (result.isRight()) {
-      expect(inMemoryRepositoriesAdoption.items.length).toEqual(2);
-    }
+    expect(result.total).toBe(2);
+    expect(result.adoptions).toHaveLength(2);
   });
 });

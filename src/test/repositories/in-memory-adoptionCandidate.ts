@@ -1,4 +1,8 @@
-import { RepositoriesAdoptionCandidate } from '@/domain/adoption/application/repositories/adoptioncandidate';
+import {
+  RepositoriesAdoptionCandidate,
+  ListAdoptionCandidateFilters,
+  PaginatedAdoptionCandidates,
+} from '@/domain/adoption/application/repositories/adoptioncandidate';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 
 export class InMemoryRepositoriesAdoptionCandidate implements RepositoriesAdoptionCandidate {
@@ -31,8 +35,27 @@ export class InMemoryRepositoriesAdoptionCandidate implements RepositoriesAdopti
       (c) => c.id.toString() === candidate.id.toString(),
     );
     if (index >= 0) {
-      // Atualiza o item diretamente
       this.items[index] = candidate;
     }
+  }
+
+  async list({
+    name,
+    cpf,
+    isBanned,
+    page,
+    limit,
+  }: ListAdoptionCandidateFilters): Promise<PaginatedAdoptionCandidates> {
+    let filtered = this.items;
+
+    if (name) filtered = filtered.filter((c) => c.name.toLowerCase().includes(name.toLowerCase()));
+    if (cpf) filtered = filtered.filter((c) => c.cpf.value.includes(cpf.replace(/\D/g, '')));
+    if (isBanned !== undefined) filtered = filtered.filter((c) => c.isBanned === isBanned);
+
+    const total = filtered.length;
+    const skip = (page - 1) * limit;
+    const candidates = filtered.slice(skip, skip + limit);
+
+    return { candidates, total, page, limit };
   }
 }

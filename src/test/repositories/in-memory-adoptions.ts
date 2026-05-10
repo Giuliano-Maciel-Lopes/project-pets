@@ -1,5 +1,9 @@
 import { DomainEvents } from '@/core/events/domain-events';
-import { RepositoriesAdoption } from '@/domain/adoption/application/repositories/adoption';
+import {
+  RepositoriesAdoption,
+  ListAdoptionFilters,
+  PaginatedAdoptions,
+} from '@/domain/adoption/application/repositories/adoption';
 import { Adoption } from '@/domain/adoption/enterprise/entities/adoption';
 
 export class InMemoryRepositoriesAdoption implements RepositoriesAdoption {
@@ -37,7 +41,26 @@ export class InMemoryRepositoriesAdoption implements RepositoriesAdoption {
       this.items.splice(index, 1);
     }
   }
-  async list() {
-    return this.items;
+
+  async list({
+    status,
+    adopterId,
+    petId,
+    unityId,
+    page,
+    limit,
+  }: ListAdoptionFilters): Promise<PaginatedAdoptions> {
+    let filtered = this.items;
+
+    if (status) filtered = filtered.filter((a) => a.status === status);
+    if (adopterId) filtered = filtered.filter((a) => a.adopterId.toString() === adopterId);
+    if (petId) filtered = filtered.filter((a) => a.petId.toString() === petId);
+    if (unityId) filtered = filtered.filter((a) => a.unityId.toString() === unityId);
+
+    const total = filtered.length;
+    const skip = (page - 1) * limit;
+    const adoptions = filtered.slice(skip, skip + limit);
+
+    return { adoptions, total, page, limit };
   }
 }
