@@ -1,6 +1,7 @@
 import { AdoptionCandidate } from '../../enterprise/entities/adoptionCandidate';
 
 export interface ListAdoptionCandidateFilters {
+  userId?: string;
   name?: string;
   cpf?: string;
   isBanned?: boolean;
@@ -16,9 +17,10 @@ export interface PaginatedAdoptionCandidates {
 }
 
 export abstract class RepositoriesAdoptionCandidate {
-  abstract findById(id: string): Promise<AdoptionCandidate | null>;
+  abstract findBy(criteria: { id?: string; email?: string; cpf?: string }): Promise<AdoptionCandidate | null>;
   abstract create(adoptionCan: AdoptionCandidate): Promise<void>;
   abstract update(adoptionCan: AdoptionCandidate): Promise<void>;
   abstract setBlock(adoptionCan: AdoptionCandidate): Promise<void>;
+  abstract linkUser(adoptionCan: AdoptionCandidate): Promise<void>;
   abstract list(filters: ListAdoptionCandidateFilters): Promise<PaginatedAdoptionCandidates>;
 }

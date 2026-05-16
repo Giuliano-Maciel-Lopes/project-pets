@@ -7,6 +7,8 @@ export class MapperPrismaAdoptionCandidate {
   static toDomain(raw: PrismaAdoptionCandidate): AdoptionCandidate {
     return AdoptionCandidate.create(
       {
+        userId: raw.userId ? new UniqueEntityId(raw.userId) : undefined,
+        email: raw.email,
         name: raw.name,
         cpf: CPF.create(raw.cpf),
         phone: raw.phone,
@@ -23,6 +25,8 @@ export class MapperPrismaAdoptionCandidate {
   static toPrisma(candidate: AdoptionCandidate) {
     return {
       id: candidate.id.toString(),
+      userId: candidate.userId?.toString() ?? null,
+      email: candidate.email,
       name: candidate.name,
       cpf: candidate.cpf.value,
       phone: candidate.phone,

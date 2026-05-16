@@ -18,12 +18,20 @@ import {
 import { PolicyRunner } from '@/core/police/policeRun';
 import { EntityMustExistPolicy } from '@/core/police/EntityMustExistPolicy';
 import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { Role } from '@/domain/account/enterprise/entities/users';
+import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
+
+interface RequestingUser {
+  email: string;
+  role: Role;
+}
 
 interface CreateAdoptionServiceRequest {
   petId: string;
   adopterId: string;
   unityId: string;
   status: AdoptionStatus;
+  requestingUser: RequestingUser;
 }
 
 type CreateAdoptionServiceResponse = Either<Error, { adoption: Adoption }>;
@@ -42,12 +50,21 @@ export class ServiceCreateAdoption {
     petId,
     status,
     unityId,
+    requestingUser,
   }: CreateAdoptionServiceRequest): Promise<CreateAdoptionServiceResponse> {
     const [candidate, pet, unit] = await Promise.all([
-      this.repositoriesAdoptionCandidate.findById(adopterId),
+      this.repositoriesAdoptionCandidate.findBy({ id: adopterId }),
       this.repositoriesPets.findById(petId),
       this.repositoriesUnits.findById(unityId),
     ]);
+
+    if (
+      requestingUser.role !== Role.ADMIN &&
+      candidate?.email !== requestingUser.email
+    ) {
+      return left(new UnauthorizedEmailError());
+    }
+
     const allPolicies = [
       new EntityMustExistPolicy('Candidate', (ctx) => ctx.candidate),
       new EntityMustExistPolicy('Pet', (ctx) => ctx.pet),
@@ -71,9 +88,7 @@ export class ServiceCreateAdoption {
     });
 
     await this.repositoriesAdoption.create(adoption);
-    // alterar para domain events
     pet!.setStatus(PetStatus.ANALYSIS);
-
     await this.repositoriesPets.update(pet!);
 
     return right({ adoption });

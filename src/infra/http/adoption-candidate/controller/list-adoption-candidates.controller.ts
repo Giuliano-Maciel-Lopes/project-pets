@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, Query } from '@nestjs/common';
 import { ServiceListAdoptionCandidate } from '@/domain/adoption/application/service/adoptioncandidate/list-service-adoptionCandidate';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import {
@@ -6,25 +6,36 @@ import {
   ListAdoptionCandidatesInput,
 } from '../schemas/list-adoption-candidates-schema';
 import { AdoptionCandidatePresenter } from '../presenters/adoption-candidate-presenter';
-import { Roles } from '@/infra/auth/roles';
-import { Role } from '@/domain/account/enterprise/entities/users';
+import {
+  CurrentUser,
+  CurrentUserPayload,
+} from '@/infra/auth/current-user.decorator';
 
 @Controller('/adoption-candidates')
 export class ControllerListAdoptionCandidates {
   constructor(private listCandidates: ServiceListAdoptionCandidate) {}
 
   @Get()
-  @Roles(Role.ADMIN)
   async handle(
     @Query(new ZodValidationPipe(listAdoptionCandidatesSchema))
     query: ListAdoptionCandidatesInput,
+    @CurrentUser() user: CurrentUserPayload,
   ) {
-    const result = await this.listCandidates.execute(query);
+    const result = await this.listCandidates.execute({
+      ...query,
+      requestingUser: user,
+    });
+
+    if (result.isLeft()) {
+      throw new ForbiddenException(result.value.message);
+    }
+
+    const { candidates, total, page, limit } = result.value;
     return {
-      candidates: result.candidates.map(AdoptionCandidatePresenter.toHTTP),
-      total: result.total,
-      page: result.page,
-      limit: result.limit,
+      candidates: candidates.map(AdoptionCandidatePresenter.toHTTP),
+      total,
+      page,
+      limit,
     };
   }
 }

@@ -47,8 +47,9 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  units     Unit[]
-  adoptions Adoption[]
+  units              Unit[]
+  adoptions          Adoption[]
+  adoptionCandidates AdoptionCandidate[]
 
   @@map("users")
 }
@@ -138,13 +139,17 @@ model Adoption {
 model AdoptionCandidate {
   id           String @id @default(uuid())
 
+  email        String  @unique
   name         String
-  cpf          String
+  cpf          String  @unique
   phone        String
   identityUrl  String
 
   isBanned     Boolean @default(false)
   bannedReason String?
+
+  userId    String? @unique
+  user      User?   @relation(fields: [userId], references: [id])
 
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")

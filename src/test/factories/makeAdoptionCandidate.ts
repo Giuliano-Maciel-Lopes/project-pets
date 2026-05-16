@@ -14,6 +14,7 @@ export function makeAdoptionCandidate(
 ): AdoptionCandidate {
   const canndidate = AdoptionCandidate.create(
     {
+      email: 'candidate@test.com',
       name: 'GiulianoLindo',
       cpf: CPF.create('123.456.789-09'),
       phone: '11999999999',

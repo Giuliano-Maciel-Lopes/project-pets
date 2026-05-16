@@ -13,19 +13,22 @@ import {
   CreateAdoptionInput,
 } from '../schemas/create-adoption-schema';
 import { AdoptionPresenter } from '../presenters/adoption-presenter';
-import { Roles } from '@/infra/auth/roles';
-import { Role } from '@/domain/account/enterprise/entities/users';
+import {
+  CurrentUser,
+  CurrentUserPayload,
+} from '@/infra/auth/current-user.decorator';
 import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
+import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
 
 @Controller('/adoptions')
 export class ControllerCreateAdoption {
   constructor(private createAdoption: ServiceCreateAdoption) {}
 
   @Post()
-  @Roles(Role.ADMIN)
   @HttpCode(201)
   async handle(
     @Body(new ZodValidationPipe(createAdoptionSchema)) body: CreateAdoptionInput,
+    @CurrentUser() user: CurrentUserPayload,
   ) {
     const { petId, adopterId, unityId } = body;
 
@@ -34,10 +37,14 @@ export class ControllerCreateAdoption {
       adopterId,
       unityId,
       status: AdoptionStatus.PENDING,
+      requestingUser: user,
     });
 
     if (result.isLeft()) {
       const error = result.value;
+      if (error instanceof UnauthorizedEmailError) {
+        throw new ForbiddenException(error.message);
+      }
       if (error.message.includes('bloqueado')) {
         throw new ForbiddenException(error.message);
       }

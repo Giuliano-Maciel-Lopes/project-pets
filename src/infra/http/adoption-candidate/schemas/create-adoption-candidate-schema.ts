@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const createAdoptionCandidateSchema = z.object({
+  email: z.string().trim().email({ message: 'Email inválido' }),
   name: z.string().trim().min(2, { message: 'Nome deve ter no mínimo 2 caracteres' }),
   cpf: z
     .string()

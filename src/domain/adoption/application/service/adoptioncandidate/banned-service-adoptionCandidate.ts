@@ -27,7 +27,7 @@ export class ServiceBannedAdoptionCandidate {
     isBanned,
   }: BannedAdoptionCandidateServiceRequest): Promise<BannedAdoptionCandidateServiceResponse> {
     const adoptionCandidate =
-      await this.repositoriesAdoptionCandidate.findById(id);
+      await this.repositoriesAdoptionCandidate.findBy({ id });
 
     if (!adoptionCandidate) {
       return left(new NotFoundError('adoption canditade'));

@@ -29,7 +29,7 @@ export class ServiceUpdateAdoptionCandidate {
     phone,
   }: UpdateAdoptionCandidateServiceRequest): Promise<UpdateAdoptionCandidateServiceResponse> {
     const adoptionCandidate =
-      await this.repositoriesAdoptionCandidate.findById(id);
+      await this.repositoriesAdoptionCandidate.findBy({ id });
 
     if (!adoptionCandidate) {
       return left(new NotFoundError('adoption canditade'));

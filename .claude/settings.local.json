@@ -8,7 +8,12 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mateu\\\\Documents\\\\projetos pessoais\\\\PETS\\\\pets-back-end\\\\project-pets\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
       "Bash(npx tsc *)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(npx prisma *)",
+      "Bash(docker-compose up *)",
+      "WebSearch",
+      "Bash(Remove-Item *)"
     ]
   }
 }

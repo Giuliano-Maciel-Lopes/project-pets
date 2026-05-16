@@ -3,13 +3,21 @@ import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 import { Either, left, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
+import { Role } from '@/domain/account/enterprise/entities/users';
+import { UnauthorizedOwnershipError } from '@/domain/adoption/errro/unauthorizedOwnershipError';
 
-interface CreateAdoptionCandidateServiceRequest {
-  id: string;
+interface RequestingUser {
+  email: string;
+  role: Role;
 }
 
-type CreateAdoptionCandidateServiceResponse = Either<
-  NotFoundError,
+interface FindByIdAdoptionCandidateServiceRequest {
+  id: string;
+  requestingUser: RequestingUser;
+}
+
+type FindByIdAdoptionCandidateServiceResponse = Either<
+  NotFoundError | UnauthorizedOwnershipError,
   { adoptionCandidate: AdoptionCandidate }
 >;
 
@@ -21,12 +29,20 @@ export class ServiceFindByIdAdoptionCandidate {
 
   async execute({
     id,
-  }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
+    requestingUser,
+  }: FindByIdAdoptionCandidateServiceRequest): Promise<FindByIdAdoptionCandidateServiceResponse> {
     const adoptionCandidate =
-      await this.repositoriesAdoptionCandidate.findById(id);
+      await this.repositoriesAdoptionCandidate.findBy({ id });
 
     if (!adoptionCandidate) {
       return left(new NotFoundError('adoptioncanditate'));
+    }
+
+    if (
+      requestingUser.role !== Role.ADMIN &&
+      adoptionCandidate.email !== requestingUser.email
+    ) {
+      return left(new UnauthorizedOwnershipError());
     }
 
     return right({ adoptionCandidate });

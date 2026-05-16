@@ -4,6 +4,8 @@ import { CPF } from './value-objects/cpf';
 import { AggregateRoot } from '@/core/entities/aggregate-root';
 
 export interface AdoptionCandidateProps {
+  userId?: UniqueEntityId;
+  email: string;
   name: string;
   cpf: CPF;
   phone: string;
@@ -49,12 +51,25 @@ export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
 
     this.touch();
   }
+  linkUser(userId: UniqueEntityId) {
+    this.props.userId = userId;
+    this.touch();
+  }
+
   banned(propsReq: Pick<AdoptionCandidateProps, 'bannedReason' | 'isBanned'>) {
     this.props.bannedReason = propsReq.bannedReason;
     this.props.isBanned = propsReq.isBanned;
   }
 
   // GETTERS
+
+  get userId() {
+    return this.props.userId;
+  }
+
+  get email() {
+    return this.props.email;
+  }
 
   get name() {
     return this.props.name;

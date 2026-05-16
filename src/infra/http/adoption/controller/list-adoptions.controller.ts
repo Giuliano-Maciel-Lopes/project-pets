@@ -6,19 +6,25 @@ import {
   ListAdoptionsInput,
 } from '../schemas/list-adoptions-schema';
 import { AdoptionPresenter } from '../presenters/adoption-presenter';
-import { Roles } from '@/infra/auth/roles';
-import { Role } from '@/domain/account/enterprise/entities/users';
+import {
+  CurrentUser,
+  CurrentUserPayload,
+} from '@/infra/auth/current-user.decorator';
 
 @Controller('/adoptions')
 export class ControllerListAdoptions {
   constructor(private listAdoptions: ServiceListAdoption) {}
 
   @Get()
-  @Roles(Role.ADMIN)
   async handle(
     @Query(new ZodValidationPipe(listAdoptionsSchema)) query: ListAdoptionsInput,
+    @CurrentUser() user: CurrentUserPayload,
   ) {
-    const result = await this.listAdoptions.execute(query);
+    const result = await this.listAdoptions.execute({
+      ...query,
+      requestingUser: user,
+    });
+
     return {
       adoptions: result.adoptions.map(AdoptionPresenter.toHTTP),
       total: result.total,

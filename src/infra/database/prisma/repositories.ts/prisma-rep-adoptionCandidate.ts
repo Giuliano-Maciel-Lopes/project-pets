@@ -14,9 +14,23 @@ export class PrismaRepositoriesAdoptionCandidate
 {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<AdoptionCandidate | null> {
-    const raw = await this.prisma.adoptionCandidate.findUnique({
-      where: { id },
+  async findBy({
+    id,
+    email,
+    cpf,
+  }: {
+    id?: string;
+    email?: string;
+    cpf?: string;
+  }): Promise<AdoptionCandidate | null> {
+    const raw = await this.prisma.adoptionCandidate.findFirst({
+      where: {
+        OR: [
+          id ? { id } : undefined,
+          email ? { email } : undefined,
+          cpf ? { cpf: cpf.replace(/\D/g, '') } : undefined,
+        ].filter(Boolean) as object[],
+      },
     });
     if (!raw) return null;
     return MapperPrismaAdoptionCandidate.toDomain(raw);
@@ -49,7 +63,15 @@ export class PrismaRepositoriesAdoptionCandidate
     });
   }
 
+  async linkUser(candidate: AdoptionCandidate): Promise<void> {
+    await this.prisma.adoptionCandidate.update({
+      where: { id: candidate.id.toString() },
+      data: { userId: candidate.userId?.toString() ?? null },
+    });
+  }
+
   async list({
+    userId,
     name,
     cpf,
     isBanned,
@@ -58,6 +80,7 @@ export class PrismaRepositoriesAdoptionCandidate
   }: ListAdoptionCandidateFilters): Promise<PaginatedAdoptionCandidates> {
     const where: Record<string, unknown> = {};
 
+    if (userId) where.userId = userId;
     if (name) where.name = { contains: name, mode: 'insensitive' };
     if (cpf) where.cpf = { contains: cpf.replace(/\D/g, '') };
     if (isBanned !== undefined) where.isBanned = isBanned;
