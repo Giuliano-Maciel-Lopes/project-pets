@@ -32,6 +32,7 @@ describe('ControllerCreateAdoptionCandidate (e2e)', () => {
   it('POST /adoption-candidates — deve criar um candidato', async () => {
     const res = await adminAgent.post('/adoption-candidates').send({
       name: 'João Silva',
+      email: 'joao.silva@test.com',
       cpf: '123.456.789-09',
       phone: '11999999999',
       identityUrl: 'https://example.com/identidade.jpg',

@@ -13,7 +13,8 @@
       "Bash(npx prisma *)",
       "Bash(docker-compose up *)",
       "WebSearch",
-      "Bash(Remove-Item *)"
+      "Bash(Remove-Item *)",
+      "Bash(npm run *)"
     ]
   }
 }

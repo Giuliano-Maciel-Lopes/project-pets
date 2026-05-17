@@ -109,9 +109,11 @@ describe('ControllerListAdoptions (e2e)', () => {
     expect(res.body.adoptions.every((a: any) => a.adopterId === adopter.id.toString())).toBe(true);
   });
 
-  it('GET /adoptions — deve retornar 403 para ADOPTER', async () => {
+  it('GET /adoptions — deve retornar lista vazia para ADOPTER sem adoções', async () => {
     const adopterAgent = await loginAsAdopter(app, userFactory);
     const res = await adopterAgent.get('/adoptions');
-    expect(res.statusCode).toBe(403);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.adoptions).toEqual([]);
+    expect(res.body.total).toBe(0);
   });
 });
