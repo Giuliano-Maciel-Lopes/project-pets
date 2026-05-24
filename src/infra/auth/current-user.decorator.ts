@@ -4,7 +4,6 @@ import { Role } from '@/domain/account/enterprise/entities/users';
 export interface CurrentUserPayload {
   id: string;
   role: Role;
-  email: string;
 }
 
 export const CurrentUser = createParamDecorator(
