@@ -1,6 +1,5 @@
 import {
   Body,
-  ConflictException,
   Controller,
   ForbiddenException,
   HttpCode,
@@ -43,10 +42,7 @@ export class ControllerCreateAdoptionCandidate {
 
     if (result.isLeft()) {
       const error = result.value;
-      if (error instanceof UnauthorizedEmailError) {
-        throw new ForbiddenException(error.message);
-      }
-      throw new ConflictException(error.message);
+      throw new ForbiddenException(error.message);
     }
 
     return {

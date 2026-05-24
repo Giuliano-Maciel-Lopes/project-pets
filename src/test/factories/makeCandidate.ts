@@ -11,6 +11,7 @@ export function makeCandidate(
 ) {
   const candidate = AdoptionCandidate.create(
     {
+      email: 'candidato@test.com',
       cpf: CPF.create('123.456.789-09'),
       identityUrl: 'https://fake.identity/url.jpg',
       name: 'Candidato Teste',

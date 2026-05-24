@@ -1,6 +1,7 @@
 import { InMemoryRepositoriesAdoptionCandidate } from '@/test/repositories/in-memory-adoptionCandidate';
 import { ServiceUpdateAdoptionCandidate } from './update-service-adoptionCandidate';
 import { makeAdoptionCandidate } from '@/test/factories/makeAdoptionCandidate';
+import { CPF } from '@/domain/adoption/enterprise/entities/value-objects/cpf';
 
 let inMemoryRepositoriesAdoptionCandidate: InMemoryRepositoriesAdoptionCandidate;
 let sut: ServiceUpdateAdoptionCandidate;
@@ -19,6 +20,7 @@ describe('AdoptionCandidate Service', () => {
       name: 'Giuliano',
       phone: '11999999999',
       identityUrl: 'http://url-inicial.com', // mudar jaja para atchemnts
+      cpf: CPF.create('123.456.789-09'),
     });
     await inMemoryRepositoriesAdoptionCandidate.create(adoptionCandidate);
 
