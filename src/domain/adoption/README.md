@@ -50,14 +50,22 @@ Gerencia o fluxo completo de adoção de animais: cadastro de candidatos a adota
 
 ## Políticas de Negócio (Adoção)
 
-Ao criar uma adoção, o sistema executa todas as políticas em sequência:
+Ao criar uma adoção, o sistema executa políticas em duas etapas:
+
+**Etapa 1 — Autorização (antes de qualquer query de entidade):**
+
+| Política | O que valida | Erro retornado |
+|---|---|---|
+| `SelfOrAdminPolicy` | ADOPTER só pode criar adoção em que o `adopterId` coincide com seu próprio ID (`actor.id`). ADMIN pode criar para qualquer candidato. | `403 Forbidden` |
+
+**Etapa 2 — Integridade de negócio (após carregar as entidades):**
 
 | Política | O que valida | Erro retornado |
 |---|---|---|
 | `EntityMustExistPolicy('Candidate')` | Candidato com o `adopterId` informado existe | `404 Not Found` |
 | `EntityMustExistPolicy('Pet')` | Pet com o `petId` informado existe | `404 Not Found` |
 | `EntityMustExistPolicy('Unit')` | Unidade com o `unityId` informado existe | `404 Not Found` |
-| `CandidateMustNotBeBannedPolicy` | Candidato não está banido | `422 Unprocessable Entity` |
+| `CandidateMustNotBeBannedPolicy` | Candidato não está banido | `403 Forbidden` |
 | `PetUnavailblePolicy` | Pet está com status `AVAILABLE` | `422 Unprocessable Entity` |
 | `UnitAndPetDistincsPolicy` | Pet pertence à unidade informada | `422 Unprocessable Entity` |
 
@@ -69,16 +77,16 @@ Após criação bem-sucedida, o pet é automaticamente movido para status `ANALY
 
 ### Adoções
 
-1. **Qualquer usuário autenticado** pode abrir um processo de adoção, desde que o e-mail do candidato informado seja o mesmo do usuário logado (ou seja ADMIN).
-2. **ADMIN vê todas as adoções.** ADOPTER vê apenas as adoções vinculadas ao seu candidato (identificado pelo e-mail).
+1. **Qualquer usuário autenticado** pode abrir um processo de adoção. ADOPTER só pode criar adoções em que o `adopterId` seja o ID do próprio candidato vinculado a ele (`actor.id === adopterId`). ADMIN pode criar para qualquer candidato.
+2. **ADMIN vê todas as adoções.** ADOPTER vê apenas as adoções vinculadas ao candidato cujo `userId` corresponde ao seu ID (`actor.id`).
 3. **Somente ADMIN** pode buscar uma adoção por ID ou atualizar o status.
-4. **Ao criar a adoção**, o sistema valida as 6 políticas descritas acima antes de persistir.
+4. **Ao criar a adoção**, o sistema valida as políticas descritas acima antes de persistir.
 
 ### Candidatos a Adoção
 
-1. **Qualquer usuário autenticado** pode criar um candidato, mas somente com seu próprio e-mail. ADMIN pode cadastrar com qualquer e-mail.
-2. **ADOPTER** pode ver apenas seus próprios dados de candidato (verificação por e-mail). ADMIN pode ver qualquer candidato.
-3. **Somente ADMIN** pode listar todos os candidatos, atualizar dados e aplicar/remover banimento.
+1. **Qualquer usuário autenticado** pode criar um candidato. Quando ADOPTER cria, seu `userId` é automaticamente vinculado ao candidato. ADMIN cria sem vínculo de `userId`.
+2. **ADOPTER** pode ver apenas seus próprios dados de candidato (verificação por `userId`). ADMIN pode ver qualquer candidato.
+3. **ADOPTER pode atualizar apenas seus próprios dados de candidato.** ADMIN pode atualizar qualquer candidato. Somente ADMIN pode listar todos os candidatos e aplicar/remover banimento.
 4. **Banimento:** Um candidato banido não pode abrir novos processos de adoção.
 5. **CPF:** Validado via value object — aceita formatos `000.000.000-00` ou `00000000000`.
 
@@ -88,12 +96,11 @@ Após criação bem-sucedida, o pet é automaticamente movido para status `ANALY
 
 | Classe | Mensagem | HTTP |
 |---|---|---|
-| `CandidateBannedError` | `O candidato encontra-se bloqueado para o processo de adoção.` | 422 |
+| `UnauthorizedError` (core) | `Sem permissão para executar esta operação.` | 403 |
+| `CandidateBannedError` | `O candidato encontra-se bloqueado para o processo de adoção.` | 403 |
 | `petUnavaliableError` | `Pet banido para adoçao` | 422 |
 | `UnitAndPetDistincsError` | `esse pet não pertence a essa unidade` | 422 |
-| `UnauthorizedEmailError` | `Você só pode criar registros com seu próprio e-mail.` | 403 |
-| `UnauthorizedOwnershipError` | `Você só pode visualizar seus próprios dados.` | 403 |
-| `NotFoundError` | `<entidade> não encontrado` | 404 |
+| `NotFoundError` (core) | `<entidade> não encontrado` | 404 |
 
 ---
 
@@ -263,7 +270,7 @@ Após criação bem-sucedida, o pet é automaticamente movido para status `ANALY
 ---
 
 ### `PUT /adoption-candidates/:id` — Atualizar candidato
-- **Acesso:** Somente `ADMIN`
+- **Acesso:** `ADMIN` (qualquer candidato) ou `ADOPTER` (apenas o próprio candidato vinculado ao seu `userId`)
 - **Parâmetro:** `id` (UUID)
 - **Body:**
 

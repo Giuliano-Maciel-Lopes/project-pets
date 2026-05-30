@@ -49,6 +49,7 @@ Gerencia o cadastro e ciclo de vida dos animais disponíveis para adoção na ON
 
 | Situação | Mensagem | HTTP |
 |---|---|---|
+| Sem permissão (não é ADMIN) | `Sem permissão para executar esta operação.` | 403 Forbidden |
 | Pet não encontrado | `<entidade> não encontrado` | 404 Not Found |
 
 ---

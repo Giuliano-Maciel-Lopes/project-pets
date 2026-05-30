@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post } from '@nestjs/common';
 import { ServiceCreatePets } from '@/domain/pets/application/services/create-service-pets';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { createPetSchema, CreatePetInput } from '../schemas/create-pet-schema';
@@ -15,8 +15,7 @@ export class ControllerCreatePet {
 
   @Post()
   @Roles(Role.ADMIN)
-  @UsePipes(new ZodValidationPipe(createPetSchema))
-  async handle(@Body() body: CreatePetInput, @CurrentUser() actor: CurrentUserPayload) {
+  async handle(@Body(new ZodValidationPipe(createPetSchema)) body: CreatePetInput, @CurrentUser() actor: CurrentUserPayload) {
     const result = await this.createPet.execute({
       actor,
       ...body,

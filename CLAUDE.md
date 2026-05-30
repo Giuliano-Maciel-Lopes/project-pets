@@ -31,9 +31,9 @@ src/
 ├── core/                          # Primitivos compartilhados (sem regra de negócio)
 │   ├── entities/                  # Entity, AggregateRoot, UniqueEntityId, WatchedList
 │   ├── either.ts                  # Either<L, R> — padrão de retorno de erros
-│   ├── erros/                     # Interface UseCaseError
+│   ├── erros/                     # UseCaseError, UnauthorizedError, NotFoundError, DuplicateSlugNameError
 │   ├── events/                    # DomainEvents dispatcher, InterfaceDomainEvent
-│   ├── police/                    # Policy interface, PolicyRunner, EntityMustExistPolicy
+│   ├── police/                    # Policy interface, PolicyRunner, EntityMustExistPolicy, RequiredRolePolicy, SelfOrAdminPolicy
 │   ├── types/optional.ts          # Optional<T, K> — utilitário de tipos
 │   └── value-objects/             # Slug
 │
@@ -54,7 +54,7 @@ src/
 │   │   ├── application/
 │   │   │   ├── repositories/      # RepositoriesAdoption, RepositoriesAdoptionCandidate
 │   │   │   └── service/           # ServiceCreateAdoption, status, list, findById…
-│   │   ├── police/                # CantidadeIsBannedPolicy, PetUnavailblePolicy, UnitAndPetDestinctsPolicy
+│   │   ├── police/                # CandidateMustNotBeBannedPolicy, PetUnavailblePolicy, UnitAndPetDistincsPolicy, AdoptionPolicyContext
 │   │   └── errro/                 # candidateBannedError, petUnavaliableError, unitAndPetError
 │   │
 │   ├── pets/
@@ -120,7 +120,12 @@ src/
 | Controller HTTP | `src/infra/http/user/controller/authenticate.controller.ts` |
 | Presenter | `src/infra/http/user/presenters/user-presenter.ts` |
 | Schema Zod | `src/infra/http/user/schemas/authenticate-schema.ts` |
-| Policy de negócio | `src/domain/adoption/police/petUnavaliable.ts` |
+| Policy de domínio (adoção) | `src/domain/adoption/police/petUnavaliable.ts` |
+| AdoptionPolicyContext | `src/domain/adoption/police/AdoptionPolicyContext.ts` |
+| RequiredRolePolicy | `src/core/police/required-role-policy.ts` |
+| SelfOrAdminPolicy | `src/core/police/self-or-admin-policy.ts` |
+| UnauthorizedError | `src/core/erros/erro/unauthorized-error.ts` |
+| CurrentUserPayload / @CurrentUser() | `src/infra/auth/current-user.decorator.ts` |
 | Evento de domínio | `src/domain/adoption/enterprise/events/create-adoption.ts` |
 | Storage abstrato | `src/domain/Attachment/application/storage/uploader.ts` |
 | Storage concreto | `src/infra/storage/local-storage.ts` |
@@ -207,6 +212,7 @@ export class PrismaRepositoriesUser implements RepositoriesUser {
 - Método único: `async execute(request): Promise<Response>`.
 - Retornam `left(new ErroClass())` para falha, `right({ dado })` para sucesso.
 - **Nunca lançam exceptions** — quem lança é o controller.
+- **Recebem `actor: { id: string; role: Role }` explicitamente** em todos os services que requerem autorização. O controller extrai o ator via `@CurrentUser() actor: CurrentUserPayload` e passa para `execute({ actor, ... })`. Services de rotas públicas (ex: `ServiceCreateUser`, `ServiceAuthenticateUser`) são exceção e não recebem `actor`.
 
 ```typescript
 type AuthenticateUserServiceResponse = Either<WrongCredentialsError, { accesToken: string }>;
@@ -251,40 +257,93 @@ if (result.isLeft()) throw new UnauthorizedException(result.value.message);
 - Interface `Policy<TContext, E extends Error>` em `src/core/police/policy.ts`.
 - Cada policy implementa `validate(context): Either<E, void>`.
 - `PolicyRunner.run(policies[], context)` executa em sequência e para no primeiro erro.
-- Usado quando um use case tem múltiplas pré-condições (ex: criação de adoção verifica candidato não banido, pet disponível, unidade ≠ unidade do pet).
+
+#### Policies do core (reutilizáveis em qualquer domínio)
+
+| Policy | Quando usar |
+|---|---|
+| `RequiredRolePolicy([Role.ADMIN])` | Só ADMIN pode executar, sem exceção |
+| `RequiredRolePolicy([Role.ADMIN, Role.ADOPTER])` | Qualquer usuário autenticado pode executar |
+| `SelfOrAdminPolicy` | ADMIN passa sempre; ADOPTER só se `actor.id === resourceOwnerId` |
+| `EntityMustExistPolicy('nome', ctx => ctx.entidade)` | Verificar se entidade existe (não-null) antes de operar |
+
+`RequiredRolePolicy` é genérica em `TContext extends ActorContext` — aceita contextos que contém `actor`. `SelfOrAdminPolicy` espera `{ actor: { id, role }; resourceOwnerId: string }`.
 
 ```typescript
-// src/domain/adoption/police/petUnavaliable.ts
-export class PetUnavailblePolicy implements Policy<PolicyContextEntity, petUnavaliableError> {
-  validate(context: PolicyContextEntity): Either<petUnavaliableError, void> {
-    if (context.pet?.status !== PetStatus.AVAILABLE) return left(new petUnavaliableError());
-    return right(undefined);
-  }
-}
+// Exemplo: só ADMIN — service simples
+const policyResult = await PolicyRunner.run(
+  [new RequiredRolePolicy([Role.ADMIN])],
+  { actor },
+);
+if (policyResult.isLeft()) return left(policyResult.value);
 
-// uso no service
-const policyResult = await PolicyRunner.run([
+// Exemplo: ADMIN ou dono do recurso
+const policyResult = await PolicyRunner.run(
+  [new SelfOrAdminPolicy()],
+  { actor, resourceOwnerId: id },
+);
+if (policyResult.isLeft()) return left(policyResult.value);
+
+// Exemplo: ADMIN + entidade deve existir (contexto combinado)
+type UnitContext = { actor: { id: string; role: Role }; unit: Units | null };
+const unit = await this.repositoriesUnits.findById(id);
+const policyResult = await PolicyRunner.run<UnitContext, UnauthorizedError | NotFoundError>(
+  [
+    new RequiredRolePolicy([Role.ADMIN]),
+    new EntityMustExistPolicy('unidade', (ctx) => ctx.unit),
+  ],
+  { actor, unit },
+);
+if (policyResult.isLeft()) return left(policyResult.value);
+// unit! é seguro aqui — EntityMustExistPolicy garantiu non-null
+```
+
+Quando o array de policies tem contexto compartilhado e TypeScript não consegue inferir o tipo, anotar o array em vez de cada construtor:
+
+```typescript
+const allPolicies: Policy<PolicyContextEntity, Error>[] = [
   new EntityMustExistPolicy('Candidate', (ctx) => ctx.candidate),
   new PetUnavailblePolicy(),
   new UnitAndPetDistincsPolicy(),
-], context);
-if (policyResult.isLeft()) return left(policyResult.value);
+];
+const policyResult = await PolicyRunner.run(allPolicies, context);
 ```
 
 ### Controllers
 
 - Nomeados como `Controller<Ação><Entidade>` (ex: `ControllerAuthenticate`, `ControllerCreatePet`).
-- Validam o body via `ZodValidationPipe` passado para `@UsePipes()` ou `@Body(new ZodValidationPipe(schema))`.
+- Validam o body via `ZodValidationPipe` **sempre passado direto para `@Body(new ZodValidationPipe(schema))`** — nunca via `@UsePipes()` no método quando o handler também usa `@CurrentUser()`, porque `@UsePipes()` no método aplica o pipe a todos os parâmetros incluindo o decorator de usuário, causando erro 400 inesperado.
 - Verificam `result.isLeft()` e lançam a exception NestJS adequada.
 - Mapeiam a resposta via Presenter (`PetPresenter.toHTTP(result.value.pet)`).
-- Rotas protegidas com `@Roles(Role.ADMIN)`, rotas públicas com `@Public()`.
+- Rotas protegidas com `@Roles(Role.ADMIN)` (barreira de borda), rotas públicas com `@Public()`.
+- Para rotas que requerem autorização, extraem o ator via `@CurrentUser() actor: CurrentUserPayload` e passam para o service: `execute({ actor, ...rest })`.
+- `UnauthorizedError` do domínio é mapeado para `ForbiddenException` (403); `NotFoundError` para `NotFoundException` (404).
+
+```typescript
+// padrão correto quando o handler mistura @Body com @CurrentUser()
+@Put(':id')
+async handle(
+  @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
+  @Body(new ZodValidationPipe(updateSchema)) body: UpdateInput,  // ← pipe no @Body, não no método
+  @CurrentUser() actor: CurrentUserPayload,
+) {
+  const result = await this.service.execute({ actor, id, ...body });
+  if (result.isLeft()) {
+    if (result.value instanceof UnauthorizedError) throw new ForbiddenException(result.value.message);
+    throw new NotFoundException(result.value.message);
+  }
+  return { data: Presenter.toHTTP(result.value.data) };
+}
+```
 
 ### Autenticação
 
 - JWT RS256 com token em **cookie httpOnly** `access_token`.
+- O payload do JWT contém apenas `{ id, role }` — sem `email` (email é dado de negócio, não de autorização).
 - Guard global: `JwtAuthGuard` (todas as rotas são protegidas por padrão).
 - `@Public()` desativa o guard para a rota específica.
-- `@Roles(Role.ADMIN)` ativa o `RolesGuard` para restringir ao papel.
+- `@Roles(Role.ADMIN)` ativa o `RolesGuard` como **primeira barreira de borda** — rejeita chamadas HTTP evidentemente inválidas sem instanciar o controller.
+- **Autorização definitiva vive no Service**: `PolicyRunner.run([new RequiredRolePolicy([Role.ADMIN])], { actor })` garante a regra independentemente de por onde o service for chamado (HTTP, job, evento). O guard de borda é uma otimização de performance, não a fonte de verdade.
 
 ### Schemas de Validação (Zod)
 
@@ -453,6 +512,8 @@ describe('ControllerCreateUnit (e2e)', () => {
 6. **Nunca usar `jest.mock` ou `vi.mock` nos testes unitários.** Usar sempre In-Memory Repositories e Fake Implementations — isso garante que os testes testam a lógica real sem mocks frágeis.
 
 7. **Nunca adicionar um campo à resposta HTTP sem criar ou atualizar o Presenter correspondente.** Responses são contratos; o Presenter é onde esse contrato é definido.
+
+8. **Nunca colocar a autorização apenas no Guard.** `@Roles(Role.ADMIN)` é uma barreira de borda HTTP — não a autoridade final. Toda regra de autorização deve ser verificada no `Service` via `PolicyRunner + RequiredRolePolicy / SelfOrAdminPolicy`. Assim a regra vale independentemente de por onde o service for invocado (HTTP, job, evento, outro service).
 
 ---
 

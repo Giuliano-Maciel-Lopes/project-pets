@@ -46,9 +46,9 @@ src/
 ├── core/                          # Primitivos reutilizáveis (sem regra de negócio)
 │   ├── entities/                  # Entity, AggregateRoot, UniqueEntityId, WatchedList
 │   ├── either.ts                  # Either<L, R> — padrão funcional de retorno de erro
-│   ├── erros/                     # Erros genéricos (NotFoundError, UseCaseError)
+│   ├── erros/                     # Erros genéricos: NotFoundError, UnauthorizedError, DuplicateSlugNameError, UseCaseError
 │   ├── events/                    # DomainEvents dispatcher
-│   ├── police/                    # Policy interface, PolicyRunner, EntityMustExistPolicy
+│   ├── police/                    # Policy interface, PolicyRunner, EntityMustExistPolicy, RequiredRolePolicy, SelfOrAdminPolicy
 │   └── value-objects/             # Slug
 │
 ├── domain/                        # Domínio puro — zero dependência de framework
@@ -272,9 +272,8 @@ O NestJS serializa automaticamente as exceptions HTTP no formato:
 | `WrongCredentialsError` | `email ou senha invalido!!.` | 401 |
 | `ExystUserWitchEmailError` | `Já existe um usuario com esse email !! faça loguin` | 409 |
 | `NotFoundError` | `<entidade> não encontrado` | 404 |
-| `UnauthorizedEmailError` | `Você só pode criar registros com seu próprio e-mail.` | 403 |
-| `UnauthorizedOwnershipError` | `Você só pode visualizar seus próprios dados.` | 403 |
-| `CandidateBannedError` | `O candidato encontra-se bloqueado para o processo de adoção.` | 422 |
+| `UnauthorizedError` | `Sem permissão para executar esta operação.` | 403 |
+| `CandidateBannedError` | `O candidato encontra-se bloqueado para o processo de adoção.` | 403 |
 | `petUnavaliableError` | `Pet banido para adoçao` | 422 |
 | `UnitAndPetDistincsError` | `esse pet não pertence a essa unidade` | 422 |
 
@@ -299,10 +298,11 @@ Cada domínio tem seu próprio README com regras de negócio detalhadas e docume
 - **Algoritmo:** RS256 (RSA com SHA-256)
 - **Armazenamento do token:** Cookie `httpOnly` chamado `access_token`
 - **Expiração:** 7 dias
+- **Payload do token:** `{ id, role }` — sem email (email é dado de negócio, não de autorização)
 - **Papéis (roles):** `ADMIN` (funcionários da ONG) e `ADOPTER` (adotantes)
 - **Rotas públicas:** `POST /users`, `POST /sessions`, `POST /users/logout`
 - **Rotas autenticadas:** Todas as demais (requerem cookie ou header `Authorization: Bearer <token>`)
-- **Rotas restritas a ADMIN:** Marcadas com `@Roles(Role.ADMIN)` nos controllers
+- **Autorização em duas camadas:** `@Roles(Role.ADMIN)` no controller (barreira de borda rápida) + `PolicyRunner + RequiredRolePolicy/SelfOrAdminPolicy` no service (fonte de verdade, vale em qualquer contexto de invocação)
 
 > Consulte o [README para o time de frontend](./README-FRONTEND.md) para exemplos de requisição e integração.
 

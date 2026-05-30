@@ -121,8 +121,7 @@ Marcadas com 🔒 nas tabelas abaixo. Se um usuário `ADOPTER` tentar acessar, r
 |---|---|
 | `email ou senha invalido!!.` | Credenciais de login incorretas |
 | `Já existe um usuario com esse email !! faça loguin` | E-mail já cadastrado |
-| `Você só pode criar registros com seu próprio e-mail.` | Tentativa de criar com e-mail diferente do logado |
-| `Você só pode visualizar seus próprios dados.` | ADOPTER tentando ver dados de outro |
+| `Sem permissão para executar esta operação.` | Usuário sem permissão (role incorreta ou tentando acessar recurso de outro) |
 | `O candidato encontra-se bloqueado para o processo de adoção.` | Candidato banido tentando adotar |
 | `Pet banido para adoçao` | Pet não está disponível |
 | `esse pet não pertence a essa unidade` | Unidade e pet não correspondem |
@@ -198,7 +197,9 @@ POST /users/logout
 
 ---
 
-### `GET /users/:id` — Buscar usuário por ID 🔒 ADMIN
+### `GET /users/:id` — Buscar usuário por ID
+
+> ADMIN pode buscar qualquer usuário. ADOPTER pode buscar apenas o próprio perfil (pelo seu próprio ID). Tentar buscar o perfil de outro usuário retorna `403`.
 
 ```http
 GET /users/550e8400-e29b-41d4-a716-446655440000
@@ -632,7 +633,7 @@ Content-Type: application/json
 
 > ⚠️ `adopterId` é o ID do **candidato** (`AdoptionCandidate`), não do usuário.
 >
-> Um `ADOPTER` só pode criar adoções em que o e-mail do candidato (`adopterId`) coincida com seu e-mail de login.
+> Um `ADOPTER` só pode criar adoções em que o `adopterId` seja o ID do candidato vinculado a ele. ADMIN pode criar adoções para qualquer candidato.
 
 **Sucesso `201`:**
 ```json
@@ -653,8 +654,8 @@ Content-Type: application/json
 
 | Status | Mensagem | Causa |
 |---|---|---|
-| `403` | `Você só pode criar registros com seu próprio e-mail.` | E-mail do candidato ≠ e-mail do usuário logado |
-| `403` | `O candidato encontra-se bloqueado...` | Candidato banido |
+| `403` | `Sem permissão para executar esta operação.` | ADOPTER tentando criar adoção para candidato de outro usuário |
+| `403` | `O candidato encontra-se bloqueado para o processo de adoção.` | Candidato banido |
 | `422` | `Pet banido para adoçao` | Pet não está `available` |
 | `422` | `esse pet não pertence a essa unidade` | Pet/unidade não correspondem |
 | `404` | `Candidate não encontrado` | `adopterId` inexistente |
@@ -760,7 +761,7 @@ Content-Type: application/json
 
 | Campo | Tipo | Obrigatório | Regra |
 |---|---|---|---|
-| `email` | `string` | ✅ | E-mail válido (deve ser o mesmo do usuário logado, a menos que seja ADMIN) |
+| `email` | `string` | ✅ | E-mail válido |
 | `name` | `string` | ✅ | Mínimo 2 caracteres |
 | `cpf` | `string` | ✅ | Formato `000.000.000-00` ou `00000000000` |
 | `phone` | `string` | ✅ | Mínimo 10 caracteres |
@@ -842,7 +843,9 @@ GET /adoption-candidates/550e8400-e29b-41d4-a716-446655440000
 
 ---
 
-### `PUT /adoption-candidates/:id` — Atualizar candidato 🔒 ADMIN
+### `PUT /adoption-candidates/:id` — Atualizar candidato
+
+> ADMIN pode atualizar qualquer candidato. ADOPTER pode atualizar apenas o próprio cadastro. Tentar atualizar dados de outro candidato retorna `403`.
 
 ```http
 PUT /adoption-candidates/550e8400-e29b-41d4-a716-446655440000
@@ -905,7 +908,7 @@ Content-Type: application/json
 | `POST` | `/users` | Público | Criar conta |
 | `POST` | `/sessions` | Público | Login |
 | `POST` | `/users/logout` | Público | Logout |
-| `GET` | `/users/:id` | 🔒 ADMIN | Buscar usuário por ID |
+| `GET` | `/users/:id` | Autenticado* | Buscar usuário por ID (ADMIN vê qualquer um; ADOPTER só o próprio) |
 | `GET` | `/users/email/:email` | 🔒 ADMIN | Buscar usuário por e-mail |
 | `POST` | `/units` | 🔒 ADMIN | Criar unidade |
 | `GET` | `/units` | Autenticado | Listar unidades |
@@ -928,8 +931,8 @@ Content-Type: application/json
 | `PATCH` | `/adoptions/:id/status` | 🔒 ADMIN | Alterar status da adoção |
 | `POST` | `/adoption-candidates` | Autenticado* | Criar candidato |
 | `GET` | `/adoption-candidates` | 🔒 ADMIN | Listar candidatos |
-| `GET` | `/adoption-candidates/:id` | Autenticado* | Buscar candidato por ID |
-| `PUT` | `/adoption-candidates/:id` | 🔒 ADMIN | Atualizar candidato |
+| `GET` | `/adoption-candidates/:id` | Autenticado* | Buscar candidato por ID (ADMIN vê qualquer um; ADOPTER só o próprio) |
+| `PUT` | `/adoption-candidates/:id` | Autenticado* | Atualizar candidato (ADMIN qualquer; ADOPTER só o próprio) |
 | `PATCH` | `/adoption-candidates/:id/ban` | 🔒 ADMIN | Banir/desbanir candidato |
 
 > \* Autenticado com restrição de ownership — veja a documentação específica da rota.

@@ -41,6 +41,7 @@ Gerencia as unidades físicas (abrigos/filiais) da ONG. Cada unidade tem um resp
 
 | Situação | Mensagem | HTTP |
 |---|---|---|
+| Sem permissão (não é ADMIN) | `Sem permissão para executar esta operação.` | 403 Forbidden |
 | Unidade não encontrada | `<entidade> não encontrado` | 404 Not Found |
 | Slug já existente | Mensagem de conflito | 409 Conflict |
 
