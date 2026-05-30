@@ -2,7 +2,7 @@ import { Policy } from '@/core/police/policy';
 import { petUnavaliableError } from '../errro/petUnavaliableError';
 import { Either, left, right } from '@/core/either';
 import { PetStatus } from '@/domain/pets/enterprise/entity/pets';
-import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { PolicyContextEntity } from './AdoptionPolicyContext';
 
 export class PetUnavailblePolicy implements Policy<
   PolicyContextEntity,

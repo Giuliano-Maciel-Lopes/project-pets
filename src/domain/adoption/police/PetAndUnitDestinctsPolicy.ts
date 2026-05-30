@@ -1,7 +1,7 @@
 import { Policy } from '@/core/police/policy';
 import { UnitAndPetDistincsError } from '../errro/unitAndPetError';
 import { Either, left, right } from '@/core/either';
-import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { PolicyContextEntity } from './AdoptionPolicyContext';
 
 export class UnitAndPetDistincsPolicy implements Policy<
   PolicyContextEntity,

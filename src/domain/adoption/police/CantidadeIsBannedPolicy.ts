@@ -1,7 +1,7 @@
 import { Policy } from '@/core/police/policy';
 import { CandidateBannedError } from '../errro/candidateBannedError';
 import { Either, left, right } from '@/core/either';
-import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { PolicyContextEntity } from './AdoptionPolicyContext';
 
 export class CandidateMustNotBeBannedPolicy implements Policy<
   PolicyContextEntity,

@@ -1,4 +1,4 @@
-import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { PolicyContextEntity } from '@/domain/adoption/police/AdoptionPolicyContext';
 
 export function makePolicyContext(
   overrides: Partial<PolicyContextEntity> = {},

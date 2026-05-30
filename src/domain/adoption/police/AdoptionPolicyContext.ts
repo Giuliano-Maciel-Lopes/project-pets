@@ -1,6 +1,6 @@
 import { Pets } from '@/domain/pets/enterprise/entity/pets';
 import { Units } from '@/domain/companyUnits/enterprise/entities/unity';
-import { AdoptionCandidate } from '../../domain/adoption/enterprise/entities/adoptionCandidate';
+import { AdoptionCandidate } from '../enterprise/entities/adoptionCandidate';
 
 export type PolicyContextEntity = {
   candidate: AdoptionCandidate | null;

@@ -15,9 +15,10 @@ import {
   CandidateMustNotBeBannedPolicy,
   PetUnavailblePolicy,
 } from '@/domain/adoption/police';
+import { Policy } from '@/core/police/policy';
 import { PolicyRunner } from '@/core/police/policeRun';
 import { EntityMustExistPolicy } from '@/core/police/EntityMustExistPolicy';
-import { PolicyContextEntity } from '@/core/police/AdoptionPolicyContext';
+import { PolicyContextEntity } from '@/domain/adoption/police/AdoptionPolicyContext';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
 
@@ -65,7 +66,7 @@ export class ServiceCreateAdoption {
       return left(new UnauthorizedEmailError());
     }
 
-    const allPolicies = [
+    const allPolicies: Policy<PolicyContextEntity, Error>[] = [
       new EntityMustExistPolicy('Candidate', (ctx) => ctx.candidate),
       new EntityMustExistPolicy('Pet', (ctx) => ctx.pet),
       new EntityMustExistPolicy('Unit', (ctx) => ctx.unit),
