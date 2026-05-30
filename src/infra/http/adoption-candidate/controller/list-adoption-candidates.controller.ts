@@ -1,4 +1,9 @@
-import { Controller, ForbiddenException, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { ServiceListAdoptionCandidate } from '@/domain/adoption/application/service/adoptioncandidate/list-service-adoptionCandidate';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import {
@@ -10,6 +15,7 @@ import {
   CurrentUser,
   CurrentUserPayload,
 } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoption-candidates')
 export class ControllerListAdoptionCandidates {
@@ -19,15 +25,16 @@ export class ControllerListAdoptionCandidates {
   async handle(
     @Query(new ZodValidationPipe(listAdoptionCandidatesSchema))
     query: ListAdoptionCandidatesInput,
-    @CurrentUser() user: CurrentUserPayload,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
-    const result = await this.listCandidates.execute({
-      ...query,
-      requestingUser: user,
-    });
+    const result = await this.listCandidates.execute({ ...query, actor });
 
     if (result.isLeft()) {
-      throw new ForbiddenException(result.value.message);
+      throw new ForbiddenException(
+        result.value instanceof UnauthorizedError
+          ? result.value.message
+          : 'Acesso negado',
+      );
     }
 
     const { candidates, total, page, limit } = result.value;

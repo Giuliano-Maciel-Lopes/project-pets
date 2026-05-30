@@ -22,7 +22,7 @@ export class ControllerListAdoptions {
   ) {
     const result = await this.listAdoptions.execute({
       ...query,
-      requestingUser: user,
+      actor: user,
     });
 
     return {

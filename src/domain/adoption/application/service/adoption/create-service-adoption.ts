@@ -20,19 +20,15 @@ import { PolicyRunner } from '@/core/police/policeRun';
 import { EntityMustExistPolicy } from '@/core/police/EntityMustExistPolicy';
 import { PolicyContextEntity } from '@/domain/adoption/police/AdoptionPolicyContext';
 import { Role } from '@/domain/account/enterprise/entities/users';
-import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
-
-interface RequestingUser {
-  id: string;
-  role: Role;
-}
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
+import { SelfOrAdminPolicy } from '@/core/police/self-or-admin-policy';
 
 interface CreateAdoptionServiceRequest {
+  actor: { id: string; role: Role };
   petId: string;
   adopterId: string;
   unityId: string;
   status: AdoptionStatus;
-  requestingUser: RequestingUser;
 }
 
 type CreateAdoptionServiceResponse = Either<Error, { adoption: Adoption }>;
@@ -47,24 +43,23 @@ export class ServiceCreateAdoption {
   ) {}
 
   async execute({
+    actor,
     adopterId,
     petId,
     status,
     unityId,
-    requestingUser,
   }: CreateAdoptionServiceRequest): Promise<CreateAdoptionServiceResponse> {
+    const authResult = await PolicyRunner.run(
+      [new SelfOrAdminPolicy()],
+      { actor, resourceOwnerId: adopterId },
+    );
+    if (authResult.isLeft()) return left(authResult.value);
+
     const [candidate, pet, unit] = await Promise.all([
       this.repositoriesAdoptionCandidate.findBy({ id: adopterId }),
       this.repositoriesPets.findById(petId),
       this.repositoriesUnits.findById(unityId),
     ]);
-
-    if (
-      requestingUser.role !== Role.ADMIN &&
-      requestingUser.id !== adopterId
-    ) {
-      return left(new UnauthorizedEmailError());
-    }
 
     const allPolicies: Policy<PolicyContextEntity, Error>[] = [
       new EntityMustExistPolicy('Candidate', (ctx) => ctx.candidate),

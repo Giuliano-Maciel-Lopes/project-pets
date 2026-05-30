@@ -18,7 +18,7 @@ import {
   CurrentUserPayload,
 } from '@/infra/auth/current-user.decorator';
 import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
-import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoptions')
 export class ControllerCreateAdoption {
@@ -37,12 +37,12 @@ export class ControllerCreateAdoption {
       adopterId,
       unityId,
       status: AdoptionStatus.PENDING,
-      requestingUser: user,
+      actor: user,
     });
 
     if (result.isLeft()) {
       const error = result.value;
-      if (error instanceof UnauthorizedEmailError) {
+      if (error instanceof UnauthorizedError) {
         throw new ForbiddenException(error.message);
       }
       if (error.message.includes('bloqueado')) {

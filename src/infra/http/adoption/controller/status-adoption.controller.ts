@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Patch,
@@ -15,6 +16,8 @@ import {
 import { AdoptionPresenter } from '../presenters/adoption-presenter';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoptions')
 export class ControllerStatusAdoption {
@@ -25,10 +28,14 @@ export class ControllerStatusAdoption {
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(statusAdoptionSchema)) body: StatusAdoptionInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
-    const result = await this.statusAdoption.execute({ id, status: body.status });
+    const result = await this.statusAdoption.execute({ actor, id, status: body.status });
 
     if (result.isLeft()) {
+      if (result.value instanceof UnauthorizedError) {
+        throw new ForbiddenException(result.value.message);
+      }
       throw new NotFoundException(result.value.message);
     }
 

@@ -13,7 +13,7 @@ import {
   CurrentUser,
   CurrentUserPayload,
 } from '@/infra/auth/current-user.decorator';
-import { UnauthorizedOwnershipError } from '@/domain/adoption/errro/unauthorizedOwnershipError';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoption-candidates')
 export class ControllerFindAdoptionCandidateById {
@@ -22,16 +22,13 @@ export class ControllerFindAdoptionCandidateById {
   @Get(':id')
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
-    @CurrentUser() user: CurrentUserPayload,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
-    const result = await this.findCandidateById.execute({
-      id,
-      requestingUser: user,
-    });
+    const result = await this.findCandidateById.execute({ actor, id });
 
     if (result.isLeft()) {
       const error = result.value;
-      if (error instanceof UnauthorizedOwnershipError) {
+      if (error instanceof UnauthorizedError) {
         throw new ForbiddenException(error.message);
       }
       throw new NotFoundException(error.message);

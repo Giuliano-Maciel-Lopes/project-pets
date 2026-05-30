@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Put,
@@ -13,23 +14,27 @@ import {
   UpdateAdoptionCandidateInput,
 } from '../schemas/update-adoption-candidate-schema';
 import { AdoptionCandidatePresenter } from '../presenters/adoption-candidate-presenter';
-import { Roles } from '@/infra/auth/roles';
-import { Role } from '@/domain/account/enterprise/entities/users';
+import {
+  CurrentUser,
+  CurrentUserPayload,
+} from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoption-candidates')
 export class ControllerUpdateAdoptionCandidate {
   constructor(private updateCandidate: ServiceUpdateAdoptionCandidate) {}
 
   @Put(':id')
-  @Roles(Role.ADMIN)
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(updateAdoptionCandidateSchema))
     body: UpdateAdoptionCandidateInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
     const { name, phone, identityUrl } = body;
 
     const result = await this.updateCandidate.execute({
+      actor,
       id,
       name,
       phone,
@@ -37,7 +42,11 @@ export class ControllerUpdateAdoptionCandidate {
     });
 
     if (result.isLeft()) {
-      throw new NotFoundException(result.value.message);
+      const error = result.value;
+      if (error instanceof UnauthorizedError) {
+        throw new ForbiddenException(error.message);
+      }
+      throw new NotFoundException(error.message);
     }
 
     return {

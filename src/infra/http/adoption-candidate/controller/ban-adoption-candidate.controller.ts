@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Patch,
@@ -15,6 +16,8 @@ import {
 import { AdoptionCandidatePresenter } from '../presenters/adoption-candidate-presenter';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/adoption-candidates')
 export class ControllerBanAdoptionCandidate {
@@ -26,15 +29,21 @@ export class ControllerBanAdoptionCandidate {
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(banAdoptionCandidateSchema))
     body: BanAdoptionCandidateInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
     const result = await this.banCandidate.execute({
+      actor,
       id,
       isBanned: body.isBanned,
       bannedReason: body.bannedReason,
     });
 
     if (result.isLeft()) {
-      throw new NotFoundException(result.value.message);
+      const error = result.value;
+      if (error instanceof UnauthorizedError) {
+        throw new ForbiddenException(error.message);
+      }
+      throw new NotFoundException(error.message);
     }
 
     return {

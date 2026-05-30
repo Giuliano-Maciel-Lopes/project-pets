@@ -4,12 +4,13 @@ import { InMemoryRepositoriesAdoption } from '@/test/repositories/in-memory-adop
 import { InMemoryRepositoriesAdoptionCandidate } from '@/test/repositories/in-memory-adoptionCandidate';
 import { ServiceListAdoption } from './list-service-adoption';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
 let adoptionRepo: InMemoryRepositoriesAdoption;
 let candidateRepo: InMemoryRepositoriesAdoptionCandidate;
 let sut: ServiceListAdoption;
 
-const adminUser = { email: 'admin@pets.com', role: Role.ADMIN };
+const adminActor = { id: 'admin-id', role: Role.ADMIN };
 
 describe('ServiceListAdoption', () => {
   beforeEach(() => {
@@ -22,14 +23,15 @@ describe('ServiceListAdoption', () => {
     await adoptionRepo.create(makeAdoption());
     await adoptionRepo.create(makeAdoption());
 
-    const result = await sut.execute({ requestingUser: adminUser, page: 1, limit: 25 });
+    const result = await sut.execute({ actor: adminActor, page: 1, limit: 25 });
 
     expect(result.total).toBe(2);
     expect(result.adoptions).toHaveLength(2);
   });
 
-  it('adotante visualiza apenas as adoções vinculadas ao seu e-mail', async () => {
-    const candidate = makeAdoptionCandidate({ email: 'dono@test.com' });
+  it('adotante visualiza apenas as adoções vinculadas ao seu userId', async () => {
+    const adopterId = new UniqueEntityId('adopter-id-123');
+    const candidate = makeAdoptionCandidate({ userId: adopterId });
     await candidateRepo.create(candidate);
 
     const adotacaoDono = makeAdoption({ adopterId: candidate.id });
@@ -38,7 +40,7 @@ describe('ServiceListAdoption', () => {
     await adoptionRepo.create(adotacaoOutra);
 
     const result = await sut.execute({
-      requestingUser: { email: 'dono@test.com', role: Role.ADOPTER },
+      actor: { id: 'adopter-id-123', role: Role.ADOPTER },
       page: 1,
       limit: 25,
     });
@@ -51,7 +53,7 @@ describe('ServiceListAdoption', () => {
     await adoptionRepo.create(makeAdoption());
 
     const result = await sut.execute({
-      requestingUser: { email: 'semcadastro@test.com', role: Role.ADOPTER },
+      actor: { id: 'sem-candidate-id', role: Role.ADOPTER },
       page: 1,
       limit: 25,
     });

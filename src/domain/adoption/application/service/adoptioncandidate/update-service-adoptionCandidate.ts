@@ -3,8 +3,14 @@ import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptio
 import { Either, left, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
+import { Role } from '@/domain/account/enterprise/entities/users';
+import { PolicyRunner } from '@/core/police/policeRun';
+import { EntityMustExistPolicy } from '@/core/police/EntityMustExistPolicy';
+import { SelfOrAdminPolicy } from '@/core/police/self-or-admin-policy';
 
 interface UpdateAdoptionCandidateServiceRequest {
+  actor: { id: string; role: Role };
   id: string;
   name: string;
   phone: string;
@@ -12,9 +18,15 @@ interface UpdateAdoptionCandidateServiceRequest {
 }
 
 type UpdateAdoptionCandidateServiceResponse = Either<
-  NotFoundError,
+  NotFoundError | UnauthorizedError,
   { adoptionCandidate: AdoptionCandidate }
 >;
+
+type CandidateOwnerContext = {
+  actor: { id: string; role: Role };
+  resourceOwnerId: string;
+  candidate: AdoptionCandidate | null;
+};
 
 @Injectable()
 export class ServiceUpdateAdoptionCandidate {
@@ -23,22 +35,33 @@ export class ServiceUpdateAdoptionCandidate {
   ) {}
 
   async execute({
+    actor,
     id,
     identityUrl,
     name,
     phone,
   }: UpdateAdoptionCandidateServiceRequest): Promise<UpdateAdoptionCandidateServiceResponse> {
-    const adoptionCandidate =
-      await this.repositoriesAdoptionCandidate.findBy({ id });
+    const candidate = await this.repositoriesAdoptionCandidate.findBy({ id });
 
-    if (!adoptionCandidate) {
-      return left(new NotFoundError('adoption canditade'));
-    }
+    const context: CandidateOwnerContext = {
+      actor,
+      candidate,
+      resourceOwnerId: candidate?.userId?.toString() ?? '',
+    };
 
-    adoptionCandidate.update({ identityUrl, name, phone });
+    const policyResult = await PolicyRunner.run<CandidateOwnerContext, NotFoundError | UnauthorizedError>(
+      [
+        new EntityMustExistPolicy('candidato', (ctx) => ctx.candidate),
+        new SelfOrAdminPolicy(),
+      ],
+      context,
+    );
 
-    await this.repositoriesAdoptionCandidate.update(adoptionCandidate);
+    if (policyResult.isLeft()) return left(policyResult.value);
 
-    return right({ adoptionCandidate });
+    candidate!.update({ identityUrl, name, phone });
+    await this.repositoriesAdoptionCandidate.update(candidate!);
+
+    return right({ adoptionCandidate: candidate! });
   }
 }

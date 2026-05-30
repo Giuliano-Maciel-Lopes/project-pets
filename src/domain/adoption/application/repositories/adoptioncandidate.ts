@@ -17,7 +17,7 @@ export interface PaginatedAdoptionCandidates {
 }
 
 export abstract class RepositoriesAdoptionCandidate {
-  abstract findBy(criteria: { id?: string; email?: string; cpf?: string }): Promise<AdoptionCandidate | null>;
+  abstract findBy(criteria: { id?: string; email?: string; cpf?: string; userId?: string }): Promise<AdoptionCandidate | null>;
   abstract create(adoptionCan: AdoptionCandidate): Promise<void>;
   abstract update(adoptionCan: AdoptionCandidate): Promise<void>;
   abstract setBlock(adoptionCan: AdoptionCandidate): Promise<void>;

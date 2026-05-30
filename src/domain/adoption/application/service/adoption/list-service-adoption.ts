@@ -7,13 +7,8 @@ import {
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import { Role } from '@/domain/account/enterprise/entities/users';
 
-interface RequestingUser {
-  email: string;
-  role: Role;
-}
-
 interface ListAdoptionServiceRequest extends ListAdoptionFilters {
-  requestingUser: RequestingUser;
+  actor: { id: string; role: Role };
 }
 
 @Injectable()
@@ -24,12 +19,12 @@ export class ServiceListAdoption {
   ) {}
 
   async execute({
-    requestingUser,
+    actor,
     ...filters
   }: ListAdoptionServiceRequest): Promise<PaginatedAdoptions> {
-    if (requestingUser.role !== Role.ADMIN) {
+    if (actor.role !== Role.ADMIN) {
       const candidate = await this.repositoriesAdoptionCandidate.findBy({
-        email: requestingUser.email,
+        userId: actor.id,
       });
 
       if (!candidate) {

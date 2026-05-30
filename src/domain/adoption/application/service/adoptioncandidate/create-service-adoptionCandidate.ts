@@ -1,20 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
-import { Either, left, right } from '@/core/either';
+import { Either, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import { CPF } from '@/domain/adoption/enterprise/entities/value-objects/cpf';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Role } from '@/domain/account/enterprise/entities/users';
-import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
-
-interface RequestingUser {
-  id: string;
-  email: string;
-  role: Role;
-}
 
 interface CreateAdoptionCandidateServiceRequest {
-  requestingUser: RequestingUser;
+  actor: { id: string; role: Role };
   email: string;
   name: string;
   cpf: string;
@@ -23,7 +16,7 @@ interface CreateAdoptionCandidateServiceRequest {
 }
 
 type CreateAdoptionCandidateServiceResponse = Either<
-  UnauthorizedEmailError,
+  never,
   { adoptioncandidate: AdoptionCandidate }
 >;
 
@@ -34,21 +27,15 @@ export class ServiceCreateAdoptionCandidate {
   ) {}
 
   async execute({
-    requestingUser,
+    actor,
     email,
     cpf,
     identityUrl,
     name,
     phone,
   }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
-    if (requestingUser.role !== Role.ADMIN && email !== requestingUser.email) {
-      return left(new UnauthorizedEmailError());
-    }
-
     const userId =
-      requestingUser.role !== Role.ADMIN
-        ? new UniqueEntityId(requestingUser.id)
-        : undefined;
+      actor.role !== Role.ADMIN ? new UniqueEntityId(actor.id) : undefined;
 
     const adoptioncandidate = AdoptionCandidate.create({
       userId,

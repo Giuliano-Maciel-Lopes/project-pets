@@ -1,25 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
 import { Either, left, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import { Role } from '@/domain/account/enterprise/entities/users';
-import { UnauthorizedOwnershipError } from '@/domain/adoption/errro/unauthorizedOwnershipError';
-
-interface RequestingUser {
-  email: string;
-  role: Role;
-}
+import { PolicyRunner } from '@/core/police/policeRun';
+import { EntityMustExistPolicy } from '@/core/police/EntityMustExistPolicy';
+import { SelfOrAdminPolicy } from '@/core/police/self-or-admin-policy';
 
 interface FindByIdAdoptionCandidateServiceRequest {
+  actor: { id: string; role: Role };
   id: string;
-  requestingUser: RequestingUser;
 }
 
 type FindByIdAdoptionCandidateServiceResponse = Either<
-  NotFoundError | UnauthorizedOwnershipError,
+  NotFoundError | UnauthorizedError,
   { adoptionCandidate: AdoptionCandidate }
 >;
+
+type CandidateOwnerContext = {
+  actor: { id: string; role: Role };
+  resourceOwnerId: string;
+  candidate: AdoptionCandidate | null;
+};
 
 @Injectable()
 export class ServiceFindByIdAdoptionCandidate {
@@ -28,23 +32,27 @@ export class ServiceFindByIdAdoptionCandidate {
   ) {}
 
   async execute({
+    actor,
     id,
-    requestingUser,
   }: FindByIdAdoptionCandidateServiceRequest): Promise<FindByIdAdoptionCandidateServiceResponse> {
-    const adoptionCandidate =
-      await this.repositoriesAdoptionCandidate.findBy({ id });
+    const candidate = await this.repositoriesAdoptionCandidate.findBy({ id });
 
-    if (!adoptionCandidate) {
-      return left(new NotFoundError('adoptioncanditate'));
-    }
+    const context: CandidateOwnerContext = {
+      actor,
+      candidate,
+      resourceOwnerId: candidate?.userId?.toString() ?? '',
+    };
 
-    if (
-      requestingUser.role !== Role.ADMIN &&
-      adoptionCandidate.email !== requestingUser.email
-    ) {
-      return left(new UnauthorizedOwnershipError());
-    }
+    const policyResult = await PolicyRunner.run<CandidateOwnerContext, NotFoundError | UnauthorizedError>(
+      [
+        new EntityMustExistPolicy('candidato', (ctx) => ctx.candidate),
+        new SelfOrAdminPolicy(),
+      ],
+      context,
+    );
 
-    return right({ adoptionCandidate });
+    if (policyResult.isLeft()) return left(policyResult.value);
+
+    return right({ adoptionCandidate: candidate! });
   }
 }

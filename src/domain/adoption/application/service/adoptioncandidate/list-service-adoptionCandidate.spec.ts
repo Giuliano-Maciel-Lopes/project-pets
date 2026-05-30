@@ -3,13 +3,13 @@ import { InMemoryRepositoriesAdoptionCandidate } from '@/test/repositories/in-me
 import { ServiceListAdoptionCandidate } from './list-service-adoptionCandidate';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Role } from '@/domain/account/enterprise/entities/users';
-import { UnauthorizedOwnershipError } from '@/domain/adoption/errro/unauthorizedOwnershipError';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 let repo: InMemoryRepositoriesAdoptionCandidate;
 let sut: ServiceListAdoptionCandidate;
 
-const adminUser = { email: 'admin@pets.com', role: Role.ADMIN };
-const adopterUser = { email: 'adopter@test.com', role: Role.ADOPTER };
+const adminActor = { id: 'admin-id', role: Role.ADMIN };
+const adopterActor = { id: 'adopter-id', role: Role.ADOPTER };
 
 describe('ServiceListAdoptionCandidate', () => {
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('ServiceListAdoptionCandidate', () => {
     await repo.create(makeAdoptionCandidate());
     await repo.create(makeAdoptionCandidate());
 
-    const result = await sut.execute({ requestingUser: adminUser, page: 1, limit: 25 });
+    const result = await sut.execute({ actor: adminActor, page: 1, limit: 25 });
 
     expect(result.isRight()).toBe(true);
     if (result.isRight()) {
@@ -33,10 +33,10 @@ describe('ServiceListAdoptionCandidate', () => {
   it('non-admin recebe erro de acesso negado', async () => {
     await repo.create(makeAdoptionCandidate());
 
-    const result = await sut.execute({ requestingUser: adopterUser, page: 1, limit: 25 });
+    const result = await sut.execute({ actor: adopterActor, page: 1, limit: 25 });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(UnauthorizedOwnershipError);
+    expect(result.value).toBeInstanceOf(UnauthorizedError);
   });
 
   it('admin filtra por userId', async () => {
@@ -45,7 +45,7 @@ describe('ServiceListAdoptionCandidate', () => {
     await repo.create(makeAdoptionCandidate());
 
     const result = await sut.execute({
-      requestingUser: adminUser,
+      actor: adminActor,
       userId: userId.toString(),
       page: 1,
       limit: 25,
@@ -61,7 +61,7 @@ describe('ServiceListAdoptionCandidate', () => {
     await repo.create(makeAdoptionCandidate({ isBanned: true }));
     await repo.create(makeAdoptionCandidate({ isBanned: false }));
 
-    const result = await sut.execute({ requestingUser: adminUser, isBanned: true, page: 1, limit: 25 });
+    const result = await sut.execute({ actor: adminActor, isBanned: true, page: 1, limit: 25 });
 
     expect(result.isRight()).toBe(true);
     if (result.isRight()) {
@@ -74,8 +74,8 @@ describe('ServiceListAdoptionCandidate', () => {
       await repo.create(makeAdoptionCandidate());
     }
 
-    const page1 = await sut.execute({ requestingUser: adminUser, page: 1, limit: 3 });
-    const page2 = await sut.execute({ requestingUser: adminUser, page: 2, limit: 3 });
+    const page1 = await sut.execute({ actor: adminActor, page: 1, limit: 3 });
+    const page2 = await sut.execute({ actor: adminActor, page: 2, limit: 3 });
 
     expect(page1.isRight()).toBe(true);
     expect(page2.isRight()).toBe(true);

@@ -12,16 +12,19 @@ export class InMemoryRepositoriesAdoptionCandidate implements RepositoriesAdopti
     id,
     email,
     cpf,
+    userId,
   }: {
     id?: string;
     email?: string;
     cpf?: string;
+    userId?: string;
   }): Promise<AdoptionCandidate | null> {
     return (
       this.items.find((c) => {
         if (id && c.id.toString() === id) return true;
         if (email && c.email === email) return true;
         if (cpf && c.cpf.value === cpf.replace(/\D/g, '')) return true;
+        if (userId && c.userId?.toString() === userId) return true;
         return false;
       }) ?? null
     );

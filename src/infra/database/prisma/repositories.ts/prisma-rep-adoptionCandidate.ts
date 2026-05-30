@@ -18,10 +18,12 @@ export class PrismaRepositoriesAdoptionCandidate
     id,
     email,
     cpf,
+    userId,
   }: {
     id?: string;
     email?: string;
     cpf?: string;
+    userId?: string;
   }): Promise<AdoptionCandidate | null> {
     const raw = await this.prisma.adoptionCandidate.findFirst({
       where: {
@@ -29,6 +31,7 @@ export class PrismaRepositoriesAdoptionCandidate
           id ? { id } : undefined,
           email ? { email } : undefined,
           cpf ? { cpf: cpf.replace(/\D/g, '') } : undefined,
+          userId ? { userId } : undefined,
         ].filter(Boolean) as object[],
       },
     });

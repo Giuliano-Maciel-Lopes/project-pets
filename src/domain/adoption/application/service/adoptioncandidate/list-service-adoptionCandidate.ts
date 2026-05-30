@@ -5,20 +5,17 @@ import {
   PaginatedAdoptionCandidates,
 } from '../../repositories/adoptioncandidate';
 import { Either, left, right } from '@/core/either';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 import { Role } from '@/domain/account/enterprise/entities/users';
-import { UnauthorizedOwnershipError } from '@/domain/adoption/errro/unauthorizedOwnershipError';
-
-interface RequestingUser {
-  email: string;
-  role: Role;
-}
+import { PolicyRunner } from '@/core/police/policeRun';
+import { RequiredRolePolicy } from '@/core/police/required-role-policy';
 
 interface ListAdoptionCandidateServiceRequest extends ListAdoptionCandidateFilters {
-  requestingUser: RequestingUser;
+  actor: { id: string; role: Role };
 }
 
 type ListAdoptionCandidateServiceResponse = Either<
-  UnauthorizedOwnershipError,
+  UnauthorizedError,
   PaginatedAdoptionCandidates
 >;
 
@@ -29,12 +26,15 @@ export class ServiceListAdoptionCandidate {
   ) {}
 
   async execute({
-    requestingUser,
+    actor,
     ...filters
   }: ListAdoptionCandidateServiceRequest): Promise<ListAdoptionCandidateServiceResponse> {
-    if (requestingUser.role !== Role.ADMIN) {
-      return left(new UnauthorizedOwnershipError());
-    }
+    const policyResult = await PolicyRunner.run(
+      [new RequiredRolePolicy([Role.ADMIN])],
+      { actor },
+    );
+
+    if (policyResult.isLeft()) return left(policyResult.value);
 
     const result = await this.repositoriesAdoptionCandidate.list(filters);
     return right(result);
