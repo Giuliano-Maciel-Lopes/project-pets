@@ -2,6 +2,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Put,
@@ -12,6 +13,8 @@ import { uuidParamSchema } from '../../schemas/uuid-param.schema';
 import { updateUnitSchema, UpdateUnitInput } from '../schemas/update-unit-schema';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/units')
 export class ControllerUpdateUnit {
@@ -22,10 +25,12 @@ export class ControllerUpdateUnit {
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(updateUnitSchema)) body: UpdateUnitInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
     const { name, address, city, state, managerId } = body;
 
     const result = await this.updateUnit.execute({
+      actor,
       id,
       name,
       address,
@@ -36,6 +41,9 @@ export class ControllerUpdateUnit {
 
     if (result.isLeft()) {
       const error = result.value;
+      if (error instanceof UnauthorizedError) {
+        throw new ForbiddenException(error.message);
+      }
       if (error.message.includes('não encontrado')) {
         throw new NotFoundException(error.message);
       }

@@ -7,10 +7,10 @@ export interface ActorContext {
   actor: { id: string; role: Role };
 }
 
-export class RequiredRolePolicy implements Policy<ActorContext, UnauthorizedError> {
+export class RequiredRolePolicy<TContext extends ActorContext = ActorContext> implements Policy<TContext, UnauthorizedError> {
   constructor(private readonly allowed: Role[]) {}
 
-  validate(context: ActorContext): Either<UnauthorizedError, void> {
+  validate(context: TContext): Either<UnauthorizedError, void> {
     if (!this.allowed.includes(context.actor.role)) {
       return left(new UnauthorizedError());
     }

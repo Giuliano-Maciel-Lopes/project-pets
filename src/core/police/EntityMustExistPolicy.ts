@@ -1,24 +1,14 @@
 import { left, right, Either } from '@/core/either';
 import { Policy } from './policy';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
-import { PolicyContextEntity } from './AdoptionPolicyContext';
 
-export class EntityMustExistPolicy<Entity> implements Policy<
-  PolicyContextEntity,
-  NotFoundError
-> {
-  private entityGetter: (context: PolicyContextEntity) => Entity | null;
-  private entityName: string;
-
+export class EntityMustExistPolicy<TContext, Entity> implements Policy<TContext, NotFoundError> {
   constructor(
-    entityName: string,
-    entityGetter: (context: PolicyContextEntity) => Entity | null,
-  ) {
-    this.entityName = entityName;
-    this.entityGetter = entityGetter;
-  }
+    private readonly entityName: string,
+    private readonly entityGetter: (context: TContext) => Entity | null | undefined,
+  ) {}
 
-  validate(context: PolicyContextEntity): Either<NotFoundError, void> {
+  validate(context: TContext): Either<NotFoundError, void> {
     const entity = this.entityGetter(context);
     if (!entity) {
       return left(new NotFoundError(this.entityName));

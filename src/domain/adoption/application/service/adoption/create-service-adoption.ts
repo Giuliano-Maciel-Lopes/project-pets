@@ -22,7 +22,7 @@ import { Role } from '@/domain/account/enterprise/entities/users';
 import { UnauthorizedEmailError } from '@/domain/adoption/errro/unauthorizedEmailError';
 
 interface RequestingUser {
-  email: string;
+  id: string;
   role: Role;
 }
 
@@ -60,7 +60,7 @@ export class ServiceCreateAdoption {
 
     if (
       requestingUser.role !== Role.ADMIN &&
-      candidate?.email !== requestingUser.email
+      requestingUser.id !== adopterId
     ) {
       return left(new UnauthorizedEmailError());
     }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Patch,
@@ -11,6 +12,8 @@ import { uuidParamSchema } from '../../schemas/uuid-param.schema';
 import { toggleActiveUnitSchema, ToggleActiveUnitInput } from '../schemas/toggle-active-unit-schema';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/units')
 export class ControllerToggleActiveUnit {
@@ -21,13 +24,18 @@ export class ControllerToggleActiveUnit {
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(toggleActiveUnitSchema)) body: ToggleActiveUnitInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
     const result = await this.toggleActiveUnit.execute({
+      actor,
       id,
       isActive: body.isActive,
     });
 
     if (result.isLeft()) {
+      if (result.value instanceof UnauthorizedError) {
+        throw new ForbiddenException(result.value.message);
+      }
       throw new NotFoundException(result.value.message);
     }
 
