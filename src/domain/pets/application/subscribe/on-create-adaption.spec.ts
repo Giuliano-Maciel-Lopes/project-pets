@@ -6,6 +6,9 @@ import { PetStatus } from '@/domain/pets/enterprise/entity/pets';
 import { makePet } from '@/test/factories/makePet';
 import { makeAdoption } from '@/test/factories/makeAdoption';
 import { waitFor } from '@/test/utils/wait-for';
+import { Role } from '@/domain/account/enterprise/entities/users';
+
+const SYSTEM_ACTOR = { id: 'system', role: Role.ADMIN };
 
 let inMemoryRepositoriesPets: InMemoryRepositoriesPets;
 let inMemoryRepositoriesAdoption: InMemoryRepositoriesAdoption;
@@ -37,6 +40,7 @@ describe('OnCreateAdoption Event', () => {
 
     await waitFor(() => {
       expect(executeSpy).toHaveBeenCalledWith({
+        actor: SYSTEM_ACTOR,
         id: pet.id.toString(),
         status: PetStatus.ANALYSIS,
       });

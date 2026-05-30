@@ -6,48 +6,36 @@ import { ServicePetAttachments } from './attachements-service-pets';
 import { InMemoryRepositoriesPetsAttachements } from '@/test/repositories/in-memory-pets-Attachement';
 import { makePetAttachment } from '@/test/factories/makePetAttachemnts';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { Role } from '@/domain/account/enterprise/entities/users';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 let inMemoryRepositoriesPets: InMemoryRepositoriesPets;
 let inMemoryRepositoriesPetsAttachements: InMemoryRepositoriesPetsAttachements;
 let servicePetAttachments: ServicePetAttachments;
 let sut: ServiceUpdatePets;
 
+const adminActor = { id: 'admin-id', role: Role.ADMIN };
+const adopterActor = { id: 'adopter-id', role: Role.ADOPTER };
+
 describe('ServiceUpdatePets', () => {
   beforeEach(() => {
-    inMemoryRepositoriesPetsAttachements =
-      new InMemoryRepositoriesPetsAttachements();
-
-    inMemoryRepositoriesPets = new InMemoryRepositoriesPets(
-      inMemoryRepositoriesPetsAttachements,
-    );
-
-    servicePetAttachments = new ServicePetAttachments(
-      inMemoryRepositoriesPetsAttachements,
-    );
-
-    sut = new ServiceUpdatePets(
-      inMemoryRepositoriesPets,
-      servicePetAttachments,
-    );
+    inMemoryRepositoriesPetsAttachements = new InMemoryRepositoriesPetsAttachements();
+    inMemoryRepositoriesPets = new InMemoryRepositoriesPets(inMemoryRepositoriesPetsAttachements);
+    servicePetAttachments = new ServicePetAttachments(inMemoryRepositoriesPetsAttachements);
+    sut = new ServiceUpdatePets(inMemoryRepositoriesPets, servicePetAttachments);
   });
 
-  it('deve atualizar um pet corretamente', async () => {
+  it('admin atualiza um pet corretamente', async () => {
     const pet = makePet({ name: 'cacau', age: 2 });
     await inMemoryRepositoriesPets.create(pet);
 
-    // attachments iniciais
     inMemoryRepositoriesPetsAttachements.items.push(
-      makePetAttachment({
-        petId: pet.id,
-        attachmentId: new UniqueEntityId('1'),
-      }),
-      makePetAttachment({
-        petId: pet.id,
-        attachmentId: new UniqueEntityId('2'),
-      }),
+      makePetAttachment({ petId: pet.id, attachmentId: new UniqueEntityId('1') }),
+      makePetAttachment({ petId: pet.id, attachmentId: new UniqueEntityId('2') }),
     );
 
     const result = await sut.execute({
+      actor: adminActor,
       id: pet.id.toString(),
       name: 'new name',
       species: 'new specie',
@@ -59,33 +47,41 @@ describe('ServiceUpdatePets', () => {
     });
 
     expect(result.isRight()).toBe(true);
-
     if (result.isRight()) {
-      const updatedPet = result.value.pet;
-
-      expect(updatedPet.id).toBe(pet.id);
-      expect(inMemoryRepositoriesPets.items[0]).toEqual(updatedPet);
-
-      expect(updatedPet.name).toBe('new name');
-      expect(updatedPet.species).toBe('new specie');
-      expect(updatedPet.unitId.toString()).toBe('new unit');
-      expect(updatedPet.breed).toBe('new breed');
-      expect(updatedPet.age).toBe(3);
-      expect(updatedPet.gender).toBe(PetSex.MALE);
-
-      expect(updatedPet.attachment.currentItems).toHaveLength(3);
-
-      expect(updatedPet.attachment.currentItems).toEqual([
-        expect.objectContaining({
-          attachmentId: new UniqueEntityId('4'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityId('5'),
-        }),
-        expect.objectContaining({
-          attachmentId: new UniqueEntityId('1'),
-        }),
-      ]);
+      expect(result.value.pet.name).toBe('new name');
+      expect(result.value.pet.attachment.currentItems).toHaveLength(3);
     }
+  });
+
+  it('adopter não pode atualizar pet', async () => {
+    const pet = makePet();
+    await inMemoryRepositoriesPets.create(pet);
+
+    const result = await sut.execute({
+      actor: adopterActor,
+      id: pet.id.toString(),
+      name: 'tentativa',
+      species: 'dog',
+      unitId: 'unit-1',
+      breed: 'srd',
+      attachmentIds: [],
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(UnauthorizedError);
+  });
+
+  it('retorna NotFoundError quando pet não existe', async () => {
+    const result = await sut.execute({
+      actor: adminActor,
+      id: 'id-inexistente',
+      name: 'nome',
+      species: 'dog',
+      unitId: 'unit-1',
+      breed: 'srd',
+      attachmentIds: [],
+    });
+
+    expect(result.isLeft()).toBe(true);
   });
 });

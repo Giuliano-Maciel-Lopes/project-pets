@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   Put,
@@ -13,6 +14,8 @@ import { PetPresenter } from '../presenters/pet-presenter';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { PetSex } from '@/domain/pets/enterprise/entity/pets';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/pets')
 export class ControllerUpdatePet {
@@ -23,14 +26,19 @@ export class ControllerUpdatePet {
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(updatePetSchema)) body: UpdatePetInput,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
     const result = await this.updatePet.execute({
+      actor,
       id,
       ...body,
       sex: body.sex as PetSex | undefined,
     });
 
     if (result.isLeft()) {
+      if (result.value instanceof UnauthorizedError) {
+        throw new ForbiddenException(result.value.message);
+      }
       throw new NotFoundException(result.value.message);
     }
 

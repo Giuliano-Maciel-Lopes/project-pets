@@ -1,6 +1,7 @@
 import {
   Controller,
   Delete,
+  ForbiddenException,
   HttpCode,
   NotFoundException,
   Param,
@@ -10,6 +11,8 @@ import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { uuidParamSchema } from '../../schemas/uuid-param.schema';
 import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
+import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 
 @Controller('/pets')
 export class ControllerDeletePet {
@@ -20,10 +23,14 @@ export class ControllerDeletePet {
   @HttpCode(204)
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
+    @CurrentUser() actor: CurrentUserPayload,
   ) {
-    const result = await this.deletePet.execute({ id });
+    const result = await this.deletePet.execute({ actor, id });
 
     if (result.isLeft()) {
+      if (result.value instanceof UnauthorizedError) {
+        throw new ForbiddenException(result.value.message);
+      }
       throw new NotFoundException(result.value.message);
     }
   }
