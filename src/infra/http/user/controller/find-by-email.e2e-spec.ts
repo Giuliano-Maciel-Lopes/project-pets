@@ -1,6 +1,6 @@
 import { AppModule } from '@/app.module';
 import { UserFactory } from '@/test/factories/makeUser';
-import { loginAsAdmin } from '@/test/utils/login-and-get-cookie';
+import { loginAsAdmin, loginAsAdopter } from '@/test/utils/login-and-get-cookie';
 import { setupTestApp } from '@/test/utils/setup-test-app';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -11,7 +11,8 @@ import request from 'supertest';
 describe('ControllerFindUserByEmail (e2e)', () => {
   let app: INestApplication;
   let userFactory: UserFactory;
-  let agent: ReturnType<typeof request.agent>;
+  let adminAgent: ReturnType<typeof request.agent>;
+  let adopterAgent: ReturnType<typeof request.agent>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -24,7 +25,8 @@ describe('ControllerFindUserByEmail (e2e)', () => {
 
     await app.init();
 
-    agent = await loginAsAdmin(app, userFactory);
+    adminAgent = await loginAsAdmin(app, userFactory);
+    adopterAgent = await loginAsAdopter(app, userFactory);
   });
 
   afterAll(async () => {
@@ -35,14 +37,14 @@ describe('ControllerFindUserByEmail (e2e)', () => {
     const email = `findbyemail-${randomUUID()}@test.com`;
     await userFactory.makePrismaUser({ email });
 
-    const res = await agent.get(`/users/email/${email}`);
+    const res = await adminAgent.get(`/users/email/${email}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.user.email).toBe(email);
   });
 
   it('GET /users/email/:email — deve retornar 404 se não existir', async () => {
-    const res = await agent.get(`/users/email/naoexiste-${randomUUID()}@test.com`);
+    const res = await adminAgent.get(`/users/email/naoexiste-${randomUUID()}@test.com`);
 
     expect(res.statusCode).toBe(404);
   });
@@ -51,8 +53,17 @@ describe('ControllerFindUserByEmail (e2e)', () => {
     const email = `safe-${randomUUID()}@test.com`;
     await userFactory.makePrismaUser({ email });
 
-    const res = await agent.get(`/users/email/${email}`);
+    const res = await adminAgent.get(`/users/email/${email}`);
 
     expect(res.body.user).not.toHaveProperty('password');
+  });
+
+  it('GET /users/email/:email — deve retornar 403 quando o ator é ADOPTER', async () => {
+    const email = `adopter-block-${randomUUID()}@test.com`;
+    await userFactory.makePrismaUser({ email });
+
+    const res = await adopterAgent.get(`/users/email/${email}`);
+
+    expect(res.statusCode).toBe(403);
   });
 });

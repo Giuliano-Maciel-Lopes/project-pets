@@ -14,7 +14,8 @@
       "Bash(docker-compose up *)",
       "WebSearch",
       "Bash(Remove-Item *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(Select-String \"vitest|config\")"
     ]
   }
 }
