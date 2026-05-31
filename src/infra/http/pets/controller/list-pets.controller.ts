@@ -4,12 +4,17 @@ import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { listPetsSchema, ListPetsInput } from '../schemas/list-pets-schema';
 import { PetPresenter } from '../presenters/pet-presenter';
 import { PetStatus, PetSex } from '@/domain/pets/enterprise/entity/pets';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ListPetsDocs } from '../docs/pets.docs';
 
+@ApiTags('Pets')
+@ApiBearerAuth('JWT')
 @Controller('/pets')
 export class ControllerListPets {
   constructor(private listPets: ServiceListPets) {}
 
   @Get()
+  @ListPetsDocs()
   async handle(
     @Query(new ZodValidationPipe(listPetsSchema)) query: ListPetsInput,
   ) {

@@ -3,12 +3,17 @@ import { ServiceListUnits } from '@/domain/companyUnits/application/services/zli
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { listUnitsSchema, ListUnitsInput } from '../schemas/list-units-schema';
 import { UnitPresenter } from '../presenters/unit-presenter';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ListUnitsDocs } from '../docs/unit.docs';
 
+@ApiTags('Units')
+@ApiBearerAuth('JWT')
 @Controller('/units')
 export class ControllerListUnits {
   constructor(private listUnits: ServiceListUnits) {}
 
   @Get()
+  @ListUnitsDocs()
   async handle(
     @Query(new ZodValidationPipe(listUnitsSchema)) query: ListUnitsInput,
   ) {

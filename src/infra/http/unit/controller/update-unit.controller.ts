@@ -1,12 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  ForbiddenException,
-  NotFoundException,
-  Param,
-  Put,
-} from '@nestjs/common';
+import { Body, ConflictException, Controller, ForbiddenException, NotFoundException, Param, Put } from '@nestjs/common';
 import { ServiceUpdateUnit } from '@/domain/companyUnits/application/services/update-service-unit';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { uuidParamSchema } from '../../schemas/uuid-param.schema';
@@ -15,13 +7,18 @@ import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateUnitDocs } from '../docs/unit.docs';
 
+@ApiTags('Units')
+@ApiBearerAuth('JWT')
 @Controller('/units')
 export class ControllerUpdateUnit {
   constructor(private updateUnit: ServiceUpdateUnit) {}
 
   @Put(':id')
   @Roles(Role.ADMIN)
+  @UpdateUnitDocs()
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
     @Body(new ZodValidationPipe(updateUnitSchema)) body: UpdateUnitInput,
@@ -29,24 +26,12 @@ export class ControllerUpdateUnit {
   ) {
     const { name, address, city, state, managerId } = body;
 
-    const result = await this.updateUnit.execute({
-      actor,
-      id,
-      name,
-      address,
-      city,
-      state,
-      managerId,
-    });
+    const result = await this.updateUnit.execute({ actor, id, name, address, city, state, managerId });
 
     if (result.isLeft()) {
       const error = result.value;
-      if (error instanceof UnauthorizedError) {
-        throw new ForbiddenException(error.message);
-      }
-      if (error.message.includes('não encontrado')) {
-        throw new NotFoundException(error.message);
-      }
+      if (error instanceof UnauthorizedError) throw new ForbiddenException(error.message);
+      if (error.message.includes('não encontrado')) throw new NotFoundException(error.message);
       throw new ConflictException(error.message);
     }
 

@@ -4,13 +4,17 @@ import { Response } from 'express';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { ServiceAuthenticateUser } from '@/domain/account/application/services/authenticate-service';
 import { authenticateSchema, AuthenticateInput } from '../schemas/authenticate-schema';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthenticateDocs } from '../docs/user.docs';
 
+@ApiTags('Auth')
 @Controller('/sessions')
 export class ControllerAuthenticate {
   constructor(private authenticate: ServiceAuthenticateUser) {}
 
   @Post()
   @Public()
+  @AuthenticateDocs()
   async handle(
     @Body(new ZodValidationPipe(authenticateSchema)) body: AuthenticateInput,
     @Res({ passthrough: true }) res: Response,
@@ -27,10 +31,10 @@ export class ControllerAuthenticate {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 dias
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       path: '/',
     });
 
-    return { message: 'Autenticado com sucesso' };
+    return { message: 'Autenticado com sucesso', accessToken: result.value.accesToken };
   }
 }

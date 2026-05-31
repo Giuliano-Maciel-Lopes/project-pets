@@ -3,20 +3,23 @@ import { ServiceFindByIdPets } from '@/domain/pets/application/services/findById
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { uuidParamSchema } from '../../schemas/uuid-param.schema';
 import { PetPresenter } from '../presenters/pet-presenter';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FindPetByIdDocs } from '../docs/pets.docs';
 
+@ApiTags('Pets')
+@ApiBearerAuth('JWT')
 @Controller('/pets')
 export class ControllerFindPetById {
   constructor(private findPetById: ServiceFindByIdPets) {}
 
   @Get(':id')
+  @FindPetByIdDocs()
   async handle(
     @Param('id', new ZodValidationPipe(uuidParamSchema)) id: string,
   ) {
     const result = await this.findPetById.execute({ id });
 
-    if (result.isLeft()) {
-      throw new NotFoundException(result.value.message);
-    }
+    if (result.isLeft()) throw new NotFoundException(result.value.message);
 
     return { pet: PetPresenter.toHTTP(result.value.pet) };
   }

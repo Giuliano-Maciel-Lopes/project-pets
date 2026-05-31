@@ -3,7 +3,10 @@ import { Public } from '@/infra/auth/public';
 import { ServiceCreateUser } from '@/domain/account/application/services/crate-user-service';
 import { AccountcreateSchema, CreateAccountInput } from '../schemas/create-user-schema';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
+import { ApiTags } from '@nestjs/swagger';
+import { CreateUserDocs } from '../docs/user.docs';
 
+@ApiTags('Users')
 @Controller('/users')
 export class ControllerCreateAccount {
   constructor(private createUser: ServiceCreateUser) {}
@@ -11,6 +14,7 @@ export class ControllerCreateAccount {
   @Post()
   @Public()
   @UsePipes(new ZodValidationPipe(AccountcreateSchema))
+  @CreateUserDocs()
   async handle(@Body() body: CreateAccountInput) {
     const { email, name, password } = body;
 

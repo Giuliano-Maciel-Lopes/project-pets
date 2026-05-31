@@ -5,13 +5,18 @@ import { ServiceFindUserByEmail } from '@/domain/account/application/services/fi
 import { UserPresenter } from '../presenters/user-presenter';
 import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FindUserByEmailDocs } from '../docs/user.docs';
 
+@ApiTags('Users')
+@ApiBearerAuth('JWT')
 @Controller('/users')
 export class ControllerFindUserByEmail {
   constructor(private findUserByEmail: ServiceFindUserByEmail) {}
 
   @Get('email/:email')
   @Roles(Role.ADMIN)
+  @FindUserByEmailDocs()
   async handle(
     @Param('email') email: string,
     @CurrentUser() actor: CurrentUserPayload,
