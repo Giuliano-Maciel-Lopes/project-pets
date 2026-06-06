@@ -2,7 +2,6 @@ import { Entity } from '@/core/entities/entitty';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
-// Enum para as roles
 export enum Role {
   ADOPTER = 'ADOPTER',
   ADMIN = 'ADMIN',
@@ -12,7 +11,16 @@ export interface UserProps {
   name: string;
   email: string;
   role: Role;
-  password: string; // corrigi typo
+  password: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export type UserSafe = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -38,6 +46,17 @@ export class User extends Entity<UserProps> {
     this.props.updatedAt = new Date();
   }
 
+  toSafe(): UserSafe {
+    return {
+      id: this.id.toString(),
+      name: this.props.name,
+      email: this.props.email,
+      role: this.props.role,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
+    };
+  }
+
   get name() {
     return this.props.name;
   }
@@ -61,5 +80,4 @@ export class User extends Entity<UserProps> {
   get updatedAt() {
     return this.props.updatedAt;
   }
-
 }

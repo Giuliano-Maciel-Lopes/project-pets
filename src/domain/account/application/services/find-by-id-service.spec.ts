@@ -23,7 +23,19 @@ describe('ServiceFindUserById', () => {
 
     expect(result.isRight()).toBe(true);
     if (result.isRight()) {
-      expect(result.value.user.id.toString()).toBe('user-id-01');
+      expect(result.value.user.id).toBe('user-id-01');
+    }
+  });
+
+  it('não expõe a senha no retorno', async () => {
+    const user = makeUser({}, new UniqueEntityId('user-id-safe'));
+    repo.items.push(user);
+
+    const result = await sut.execute({ actor: adminActor, id: 'user-id-safe' });
+
+    expect(result.isRight()).toBe(true);
+    if (result.isRight()) {
+      expect(result.value.user).not.toHaveProperty('password');
     }
   });
 

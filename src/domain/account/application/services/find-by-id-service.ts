@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
-import { User, Role } from '../../enterprise/entities/users';
+import { Role, UserSafe } from '../../enterprise/entities/users';
 import { RepositoriesUser } from '../repositories/repositoriesUser';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 import { PolicyRunner } from '@/core/police/policeRun';
 import { SelfOrAdminPolicy } from '@/core/police/self-or-admin-policy';
 
-type FindByIdResponse = Either<UnauthorizedError | NotFoundError, { user: User }>;
+type FindByIdResponse = Either<UnauthorizedError | NotFoundError, { user: UserSafe }>;
 
 interface FindByIdRequest {
   actor: { id: string; role: Role };
@@ -30,6 +30,6 @@ export class ServiceFindUserById {
 
     if (!user) return left(new NotFoundError('Usuário'));
 
-    return right({ user });
+    return right({ user: user.toSafe() });
   }
 }

@@ -1,9 +1,9 @@
-import { User } from '@/domain/account/enterprise/entities/users';
+import { UserSafe } from '@/domain/account/enterprise/entities/users';
 
 export class UserPresenter {
-  static toHTTP(user: User) {
+  static toHTTP(user: UserSafe) {
     return {
-      id: user.id.toString(),
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,

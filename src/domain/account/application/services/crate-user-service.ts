@@ -11,10 +11,7 @@ interface CreateUserServiceRequest {
   email: string;
 }
 
-type CreateUserServiceResponse = Either<
-  ExystUserWitchEmailError,
-  { user: User }
->;
+type CreateUserServiceResponse = Either<ExystUserWitchEmailError, null>;
 
 @Injectable()
 export class ServiceCreateUser {
@@ -39,6 +36,6 @@ export class ServiceCreateUser {
     const user = User.create({ email, name, password: hashPassword });
 
     await this.repositorieUser.create(user);
-    return right({ user });
+    return right(null);
   }
 }

@@ -14,22 +14,15 @@ describe(' User Service', () => {
   });
 
   it('deve criar um usuario corretamente', async () => {
-    const userData = {
+    const result = await sut.execute({
       name: 'Giuliano',
       email: 'giulianomaciellopes@gmail.com',
       password: 'senha',
-    };
-
-    const result = await sut.execute(userData);
+    });
 
     expect(result.isRight()).toBe(true);
-
-    if (result.isRight()) {
-      const user = result.value.user;
-
-      expect(user.id).toBeTruthy();
-      expect(inMemoryRepositoriesUser.items[0]).toEqual(user);
-    }
+    expect(inMemoryRepositoriesUser.items).toHaveLength(1);
+    expect(inMemoryRepositoriesUser.items[0].email).toBe('giulianomaciellopes@gmail.com');
   });
 
   it('deve criar um hash  em uma  nova senha ', async () => {

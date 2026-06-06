@@ -2,16 +2,7 @@ import { User as PrismaUser, Prisma } from '@prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { User, Role } from '@/domain/account/enterprise/entities/users'
 
-export type UserSafe = {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export class MapperPrismaUser{
+export class MapperPrismaUser {
   static toDomain(raw: PrismaUser): User {
     return User.create(
       {
@@ -37,15 +28,4 @@ export class MapperPrismaUser{
       updatedAt: user.updatedAt,
     }
   }
-  static toDomainSafe(raw: Omit<PrismaUser, 'password'>): UserSafe {
-  return {
-    id: raw.id,
-    name: raw.name,
-    email: raw.email,
-    role: raw.role as unknown as Role,
-    createdAt: raw.createdAt,
-    updatedAt: raw.updatedAt,
-  }
 }
-}
-
