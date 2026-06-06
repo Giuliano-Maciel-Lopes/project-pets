@@ -28,11 +28,9 @@ export class ServiceAuthenticateUser {
     password,
   }: AuthenticateUserServiceRequest): Promise<AuthenticateUserServiceResponse> {
     const user = await this.repositorieUser.findByEmail(email);
-    const isPasswordValid =
-      user && (await this.hashcomparer.compare(password, user.password));
 
-    if (!user || !isPasswordValid) {
-      return left(new WrongCredentialsError()); // eamil ou senha invalido
+    if (!user || !(await this.hashcomparer.compare(password, user.password))) {
+      return left(new WrongCredentialsError());
     }
 
     const accesToken = await this.encrypterToken.encryptToken({

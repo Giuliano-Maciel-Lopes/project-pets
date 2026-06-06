@@ -4,9 +4,6 @@ import { SetStatusEvent } from '@/domain/adoption/enterprise/events/setStatus-Ad
 import { DomainEvents } from '@/core/events/domain-events';
 import { PetStatus } from '../../enterprise/entity/pets';
 import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
-import { Role } from '@/domain/account/enterprise/entities/users';
-
-const SYSTEM_ACTOR = { id: 'system', role: Role.ADMIN };
 
 export class OnSetStatusAdoption implements EventHandler {
   constructor(private serviceSetStatusPets: ServiceSetStatusPets) {
@@ -22,18 +19,16 @@ export class OnSetStatusAdoption implements EventHandler {
 
   private async SetStatusAdoption({ adoption }: SetStatusEvent) {
     if (adoption.status === AdoptionStatus.APPROVED) {
-      await this.serviceSetStatusPets.execute({
-        actor: SYSTEM_ACTOR,
-        id: adoption.petId.toString(),
-        status: PetStatus.UNAVAILABLE,
-      });
+      await this.serviceSetStatusPets.executeAsSystem(
+        adoption.petId.toString(),
+        PetStatus.UNAVAILABLE,
+      );
     }
     if (adoption.status === AdoptionStatus.REJECTED) {
-      await this.serviceSetStatusPets.execute({
-        actor: SYSTEM_ACTOR,
-        id: adoption.petId.toString(),
-        status: PetStatus.AVAILABLE,
-      });
+      await this.serviceSetStatusPets.executeAsSystem(
+        adoption.petId.toString(),
+        PetStatus.AVAILABLE,
+      );
     }
   }
 }

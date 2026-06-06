@@ -1,6 +1,6 @@
-import { User as PrismaUser, Prisma, Role } from '@prisma/client'
+import { User as PrismaUser, Prisma } from '@prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { User } from '@/domain/account/enterprise/entities/users'
+import { User, Role } from '@/domain/account/enterprise/entities/users'
 
 export type UserSafe = {
   id: string;
@@ -18,7 +18,7 @@ export class MapperPrismaUser{
         name: raw.name,
         email: raw.email,
         password: raw.password,
-        role: raw.role as any,
+        role: raw.role as unknown as Role,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -42,7 +42,7 @@ export class MapperPrismaUser{
     id: raw.id,
     name: raw.name,
     email: raw.email,
-    role: raw.role,
+    role: raw.role as unknown as Role,
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt,
   }

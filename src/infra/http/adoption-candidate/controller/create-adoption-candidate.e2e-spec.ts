@@ -65,4 +65,34 @@ describe('ControllerCreateAdoptionCandidate (e2e)', () => {
 
     expect(res.statusCode).toBe(400);
   });
+
+  it('POST /adoption-candidates — deve retornar 401 sem autenticação', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/adoption-candidates')
+      .send({
+        name: 'João Silva',
+        email: 'joao.silva@test.com',
+        cpf: '123.456.789-09',
+        phone: '11999999999',
+        identityUrl: 'https://example.com/identidade.jpg',
+      });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('POST /adoption-candidates — deve retornar 409 para email duplicado', async () => {
+    const payload = {
+      name: 'Maria Souza',
+      email: 'maria.duplicada@test.com',
+      cpf: '529.982.247-25',
+      phone: '11988888888',
+      identityUrl: 'https://example.com/identidade2.jpg',
+    };
+
+    await adminAgent.post('/adoption-candidates').send(payload);
+
+    const res = await adminAgent.post('/adoption-candidates').send(payload);
+
+    expect(res.statusCode).toBe(409);
+  });
 });

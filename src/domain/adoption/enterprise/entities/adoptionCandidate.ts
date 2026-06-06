@@ -59,6 +59,7 @@ export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
   banned(propsReq: Pick<AdoptionCandidateProps, 'bannedReason' | 'isBanned'>) {
     this.props.bannedReason = propsReq.bannedReason;
     this.props.isBanned = propsReq.isBanned;
+    this.touch();
   }
 
   // GETTERS

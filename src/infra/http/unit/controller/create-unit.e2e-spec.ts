@@ -60,6 +60,17 @@ describe('ControllerCreateUnit (e2e)', () => {
     expect(res.statusCode).toBe(403);
   });
 
+  it('POST /units — deve retornar 401 sem autenticação', async () => {
+    const res = await request(app.getHttpServer()).post('/units').send({
+      name: 'Unidade Centro',
+      address: 'Rua das Flores, 100',
+      city: 'São Paulo',
+      state: 'SP',
+    });
+
+    expect(res.statusCode).toBe(401);
+  });
+
   it('POST /units — deve retornar 400 com dados inválidos', async () => {
     const res = await adminAgent.post('/units').send({
       name: 'U',
