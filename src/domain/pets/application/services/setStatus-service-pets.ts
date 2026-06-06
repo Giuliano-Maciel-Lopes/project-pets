@@ -45,11 +45,4 @@ export class ServiceSetStatusPets {
 
     return right({ pet: pet! });
   }
-
-  async executeAsSystem(id: string, status: PetStatus): Promise<void> {
-    const pet = await this.repositoriesPets.findById(id);
-    if (!pet) return;
-    pet.setStatus(status);
-    await this.repositoriesPets.update(pet);
-  }
 }

@@ -3,6 +3,7 @@ import { ServiceSetStatusPets } from '../services/setStatus-service-pets';
 import { PetStatus } from '../../enterprise/entity/pets';
 import { CreateAdoptionEvent } from '@/domain/adoption/enterprise/events/create-adoption';
 import { DomainEvents } from '@/core/events/domain-events';
+import { SYSTEM_ACTOR } from '@/core/system-actor';
 
 export class OncreateAdoption implements EventHandler {
   constructor(private serviceSetStatusPets: ServiceSetStatusPets) {
@@ -17,9 +18,10 @@ export class OncreateAdoption implements EventHandler {
   }
 
   private async handleStatusPet({ adoption }: CreateAdoptionEvent) {
-    await this.serviceSetStatusPets.executeAsSystem(
-      adoption.petId.toString(),
-      PetStatus.ANALYSIS,
-    );
+    await this.serviceSetStatusPets.execute({
+      actor: SYSTEM_ACTOR,
+      id: adoption.petId.toString(),
+      status: PetStatus.ANALYSIS,
+    });
   }
 }

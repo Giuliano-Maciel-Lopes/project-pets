@@ -7,10 +7,7 @@ import { makePet } from '@/test/factories/makePet';
 import { makeAdoption } from '@/test/factories/makeAdoption';
 import { waitFor } from '@/test/utils/wait-for';
 import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
-import { Role } from '@/domain/account/enterprise/entities/users';
-
-const SYSTEM_ACTOR = { id: 'system', role: Role.ADMIN };
-
+import { SYSTEM_ACTOR } from '@/core/system-actor';
 let inMemoryRepositoriesPets: InMemoryRepositoriesPets;
 let inMemoryRepositoriesAdoption: InMemoryRepositoriesAdoption;
 let serviceSetStatusPets: ServiceSetStatusPets;
