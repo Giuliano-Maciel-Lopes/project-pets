@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AdoptionCandidate } from '@/domain/adoption/enterprise/entities/adoptionCandidate';
-import { Either, right } from '@/core/either';
+import { Either, left, right } from '@/core/either';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import { CPF } from '@/domain/adoption/enterprise/entities/value-objects/cpf';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Role } from '@/domain/account/enterprise/entities/users';
+import { InvalidCpfError } from '@/domain/adoption/errro/invalidCpfError';
 
 interface CreateAdoptionCandidateServiceRequest {
   actor: { id: string; role: Role };
@@ -16,7 +17,7 @@ interface CreateAdoptionCandidateServiceRequest {
 }
 
 type CreateAdoptionCandidateServiceResponse = Either<
-  never,
+  InvalidCpfError,
   { adoptioncandidate: AdoptionCandidate }
 >;
 
@@ -34,13 +35,16 @@ export class ServiceCreateAdoptionCandidate {
     name,
     phone,
   }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
+    const cpfResult = CPF.create(cpf);
+    if (cpfResult.isLeft()) return left(cpfResult.value);
+
     const userId =
       actor.role !== Role.ADMIN ? new UniqueEntityId(actor.id) : undefined;
 
     const adoptioncandidate = AdoptionCandidate.create({
       userId,
       email,
-      cpf: CPF.create(cpf),
+      cpf: cpfResult.value,
       name,
       phone,
       identityUrl,

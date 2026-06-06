@@ -15,7 +15,12 @@
       "WebSearch",
       "Bash(Remove-Item *)",
       "Bash(npm run *)",
-      "Bash(Select-String \"vitest|config\")"
+      "Bash(Select-String \"vitest|config\")",
+      "Bash(rm -f .env.example plano-autorizacao-e-problema.md src/domain/adoption/errro/duplicateCandidateError.ts src/domain/adoption/errro/invalidCpfError.ts)",
+      "Bash(rm -rf src/infra/http/filters/)",
+      "Bash(git fsck *)",
+      "Bash(del private.key.b64 public.key.b64)",
+      "Bash(npm list *)"
     ]
   }
 }

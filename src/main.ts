@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { EnvService } from './infra/env/env.service';
 import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -10,6 +11,7 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use(helmet());
 
   const configService = app.get(EnvService);
   const port = configService.get('PORT');

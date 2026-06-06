@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UnprocessableEntityException } from '@nestjs/common';
 import { ServiceCreateAdoptionCandidate } from '@/domain/adoption/application/service/adoptioncandidate/create-service-adoptionCandidate';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { createAdoptionCandidateSchema, CreateAdoptionCandidateInput } from '../schemas/create-adoption-candidate-schema';
@@ -23,6 +23,10 @@ export class ControllerCreateAdoptionCandidate {
     const { email, name, cpf, phone, identityUrl } = body;
 
     const result = await this.createCandidate.execute({ actor, email, name, cpf, phone, identityUrl });
+
+    if (result.isLeft()) {
+      throw new UnprocessableEntityException(result.value.message);
+    }
 
     return {
       adoptionCandidate: AdoptionCandidatePresenter.toHTTP(result.value.adoptioncandidate),

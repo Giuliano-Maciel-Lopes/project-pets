@@ -1,4 +1,5 @@
-import { Body, Controller, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Public } from '@/infra/auth/public';
 import { Response } from 'express';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
@@ -14,6 +15,7 @@ export class ControllerAuthenticate {
 
   @Post()
   @Public()
+  @UseGuards(ThrottlerGuard)
   @AuthenticateDocs()
   async handle(
     @Body(new ZodValidationPipe(authenticateSchema)) body: AuthenticateInput,

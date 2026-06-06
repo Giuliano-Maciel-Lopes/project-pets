@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Post } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post, UnprocessableEntityException } from '@nestjs/common';
 import { ServiceCreatePets } from '@/domain/pets/application/services/create-service-pets';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { createPetSchema, CreatePetInput } from '../schemas/create-pet-schema';
@@ -25,7 +25,7 @@ export class ControllerCreatePet {
 
     if (result.isLeft()) {
       if (result.value instanceof UnauthorizedError) throw new ForbiddenException(result.value.message);
-      throw result.value;
+      throw new UnprocessableEntityException(result.value.message);
     }
 
     return { pet: PetPresenter.toHTTP(result.value.pet) };
