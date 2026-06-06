@@ -25,7 +25,7 @@ describe('ServiceUpdateAdoptionCandidate', () => {
       name: 'Giuliano',
       phone: '11999999999',
       identityUrl: 'http://url-inicial.com',
-      cpf: CPF.create('123.456.789-09'),
+      cpf: CPF.fromRaw('12345678909'),
     });
     await inMemoryRepositoriesAdoptionCandidate.create(adoptionCandidate);
 
@@ -48,7 +48,7 @@ describe('ServiceUpdateAdoptionCandidate', () => {
     const ownerId = new UniqueEntityId('owner-id');
     const adoptionCandidate = makeAdoptionCandidate({
       userId: ownerId,
-      cpf: CPF.create('123.456.789-09'),
+      cpf: CPF.fromRaw('12345678909'),
     });
     await inMemoryRepositoriesAdoptionCandidate.create(adoptionCandidate);
 
@@ -66,7 +66,7 @@ describe('ServiceUpdateAdoptionCandidate', () => {
   it('adopter não pode atualizar candidato de outra pessoa', async () => {
     const adoptionCandidate = makeAdoptionCandidate({
       userId: new UniqueEntityId('dono-id'),
-      cpf: CPF.create('123.456.789-09'),
+      cpf: CPF.fromRaw('12345678909'),
     });
     await inMemoryRepositoriesAdoptionCandidate.create(adoptionCandidate);
 

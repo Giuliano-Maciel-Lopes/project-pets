@@ -6,6 +6,7 @@ export const envSchema = z.object({
   JWT_PRIVATE_KEY: z.string(),
   JWT_PUBLIC_KEY: z.string(),
   CORS_ORIGIN: z.string().optional().default('http://localhost:3000'),
+  COOKIE_SECURE: z.coerce.boolean().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;

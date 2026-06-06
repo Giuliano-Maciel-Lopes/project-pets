@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Post, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post } from '@nestjs/common';
 import { ServiceCreatePets } from '@/domain/pets/application/services/create-service-pets';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { createPetSchema, CreatePetInput } from '../schemas/create-pet-schema';
@@ -7,7 +7,6 @@ import { Roles } from '@/infra/auth/roles';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { PetSex } from '@/domain/pets/enterprise/entity/pets';
 import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
-import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreatePetDocs } from '../docs/pets.docs';
 
@@ -24,8 +23,7 @@ export class ControllerCreatePet {
     const result = await this.createPet.execute({ actor, ...body, sex: body.sex as PetSex | undefined });
 
     if (result.isLeft()) {
-      if (result.value instanceof UnauthorizedError) throw new ForbiddenException(result.value.message);
-      throw new UnprocessableEntityException(result.value.message);
+      throw new ForbiddenException(result.value.message);
     }
 
     return { pet: PetPresenter.toHTTP(result.value.pet) };

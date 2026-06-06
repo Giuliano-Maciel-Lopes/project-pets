@@ -12,7 +12,7 @@ export function makeCandidate(
   const candidate = AdoptionCandidate.create(
     {
       email: 'candidato@test.com',
-      cpf: CPF.create('123.456.789-09'),
+      cpf: CPF.fromRaw('12345678909'),
       identityUrl: 'https://fake.identity/url.jpg',
       name: 'Candidato Teste',
       phone: '(11) 99999-9999',

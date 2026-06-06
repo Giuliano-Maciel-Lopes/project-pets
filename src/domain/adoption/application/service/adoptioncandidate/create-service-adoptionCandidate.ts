@@ -6,6 +6,7 @@ import { CPF } from '@/domain/adoption/enterprise/entities/value-objects/cpf';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { InvalidCpfError } from '@/domain/adoption/errro/invalidCpfError';
+import { DuplicateCandidateError } from '@/domain/adoption/errro/duplicateCandidateError';
 
 interface CreateAdoptionCandidateServiceRequest {
   actor: { id: string; role: Role };
@@ -17,7 +18,7 @@ interface CreateAdoptionCandidateServiceRequest {
 }
 
 type CreateAdoptionCandidateServiceResponse = Either<
-  InvalidCpfError,
+  InvalidCpfError | DuplicateCandidateError,
   { adoptioncandidate: AdoptionCandidate }
 >;
 
@@ -37,6 +38,15 @@ export class ServiceCreateAdoptionCandidate {
   }: CreateAdoptionCandidateServiceRequest): Promise<CreateAdoptionCandidateServiceResponse> {
     const cpfResult = CPF.create(cpf);
     if (cpfResult.isLeft()) return left(cpfResult.value);
+
+    const normalizedCpf = cpfResult.value.value;
+
+    const [byEmail, byCpf] = await Promise.all([
+      this.repositoriesAdoptionCandidate.findBy({ email }),
+      this.repositoriesAdoptionCandidate.findBy({ cpf: normalizedCpf }),
+    ]);
+
+    if (byEmail || byCpf) return left(new DuplicateCandidateError());
 
     const userId =
       actor.role !== Role.ADMIN ? new UniqueEntityId(actor.id) : undefined;

@@ -4,6 +4,7 @@ import { EnvService } from './infra/env/env.service';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './infra/http/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,6 +13,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.use(helmet());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const configService = app.get(EnvService);
   const port = configService.get('PORT');

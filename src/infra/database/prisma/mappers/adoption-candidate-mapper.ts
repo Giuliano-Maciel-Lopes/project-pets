@@ -10,7 +10,7 @@ export class MapperPrismaAdoptionCandidate {
         userId: raw.userId ? new UniqueEntityId(raw.userId) : undefined,
         email: raw.email,
         name: raw.name,
-        cpf: CPF.create(raw.cpf),
+        cpf: CPF.fromRaw(raw.cpf),
         phone: raw.phone,
         identityUrl: raw.identityUrl,
         isBanned: raw.isBanned,

@@ -22,7 +22,7 @@ export function makeAdoptionCandidate(
     {
       email: `candidate-${randomUUID()}@test.com`,
       name: 'GiulianoLindo',
-      cpf: CPF.create(randomCpf()),
+      cpf: CPF.fromRaw(randomCpf()),
       phone: `119${Math.floor(10000000 + Math.random() * 89999999)}`,
       identityUrl: 'http://url-da-identidade.com/foto.jpg',
       isBanned: false,

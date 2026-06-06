@@ -10,9 +10,10 @@ import { ServiceFindUserByEmail } from '@/domain/account/application/services/fi
 import { ServiceAuthenticateUser } from '@/domain/account/application/services/authenticate-service';
 import { DataBaseModule } from '@/infra/database/database.module';
 import { CryptographyModule } from '@/infra/cryptography/cryptography.module';
+import { EnvModule } from '@/infra/env/env.module';
 
 @Module({
-  imports: [DataBaseModule, CryptographyModule],
+  imports: [DataBaseModule, CryptographyModule, EnvModule],
   controllers: [
     ControllerCreateAccount,
     ControllerFindUserById,

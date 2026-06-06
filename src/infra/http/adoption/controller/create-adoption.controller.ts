@@ -6,6 +6,7 @@ import { AdoptionPresenter } from '../presenters/adoption-presenter';
 import { CurrentUser, CurrentUserPayload } from '@/infra/auth/current-user.decorator';
 import { AdoptionStatus } from '@/domain/adoption/enterprise/entities/adoption';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
+import { CandidateBannedError } from '@/domain/adoption/errro/candidateBannedError';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateAdoptionDocs } from '../docs/adoption.docs';
 
@@ -35,7 +36,7 @@ export class ControllerCreateAdoption {
     if (result.isLeft()) {
       const error = result.value;
       if (error instanceof UnauthorizedError) throw new ForbiddenException(error.message);
-      if (error.message.includes('bloqueado')) throw new ForbiddenException(error.message);
+      if (error instanceof CandidateBannedError) throw new ForbiddenException(error.message);
       throw new UnprocessableEntityException(error.message);
     }
 
