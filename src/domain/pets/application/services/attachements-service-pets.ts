@@ -26,16 +26,14 @@ export class ServicePetAttachments {
     );
   }
 
-  // CREATE
   create({ pet, attachmentIds }: Props) {
     if (attachmentIds.length === 0) return;
 
     const attachments = this.buildAttachments(pet, attachmentIds);
 
-    pet.setattachment(new PetAttachmentlist(attachments));
+    pet.setAttachment(new PetAttachmentlist(attachments));
   }
 
-  //update
   async update({ pet, attachmentIds }: Props): Promise<void> {
     const currentAttachments =
       await this.petAttachmentsRepository.findManyByPetId(pet.id.toString());
@@ -46,13 +44,12 @@ export class ServicePetAttachments {
 
     attachmentsList.update(newAttachments); // faz o update na lista de acordo com novos id
 
-    pet.setattachment(attachmentsList);
+    pet.setAttachment(attachmentsList);
   }
 
-  //delete ainda vou fazer
   async removeAll(pet: Pets): Promise<void> {
     await this.petAttachmentsRepository.deleteManyByPetId(pet.id.toString());
 
-    pet.setattachment(new PetAttachmentlist([]));
+    pet.setAttachment(new PetAttachmentlist([]));
   }
 }

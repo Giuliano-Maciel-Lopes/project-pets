@@ -33,7 +33,7 @@ export class ControllerAuthenticate {
       throw new UnauthorizedException(result.value.message);
     }
 
-    res.cookie('access_token', result.value.accesToken, {
+    res.cookie('access_token', result.value.accessToken, {
       httpOnly: true,
       secure: this.envService.get('COOKIE_SECURE'),
       sameSite: 'lax',
@@ -41,6 +41,6 @@ export class ControllerAuthenticate {
       path: '/',
     });
 
-    return { message: 'Autenticado com sucesso', accessToken: result.value.accesToken };
+    return { message: 'Autenticado com sucesso', accessToken: result.value.accessToken };
   }
 }

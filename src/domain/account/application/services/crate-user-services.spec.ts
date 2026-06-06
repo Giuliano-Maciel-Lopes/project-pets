@@ -16,13 +16,13 @@ describe(' User Service', () => {
   it('deve criar um usuario corretamente', async () => {
     const result = await sut.execute({
       name: 'Giuliano',
-      email: 'giulianomaciellopes@gmail.com',
+      email: 'giuliano@test.com',
       password: 'senha',
     });
 
     expect(result.isRight()).toBe(true);
     expect(inMemoryRepositoriesUser.items).toHaveLength(1);
-    expect(inMemoryRepositoriesUser.items[0].email).toBe('giulianomaciellopes@gmail.com');
+    expect(inMemoryRepositoriesUser.items[0].email).toBe('giuliano@test.com');
   });
 
   it('deve criar um hash  em uma  nova senha ', async () => {

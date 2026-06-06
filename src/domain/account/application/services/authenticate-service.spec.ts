@@ -41,7 +41,7 @@ describe('User Service', () => {
 
     if (result.isRight()) {
       if (result.isRight()) {
-        expect(result.value.accesToken).toEqual(expect.any(String));
+        expect(result.value.accessToken).toEqual(expect.any(String));
       }
     }
   });

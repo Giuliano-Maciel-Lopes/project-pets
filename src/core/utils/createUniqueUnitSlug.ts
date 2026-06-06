@@ -1,5 +1,5 @@
-import { Slug } from '@/core/value-objects/slug';
-import { RepositoriesUnits } from '../../domain/companyUnits/application/repositories/unistsRepositories';
+﻿import { Slug } from '@/core/value-objects/slug';
+import { RepositoriesUnits } from '../../domain/companyUnits/application/repositories/unitsRepositories';
 import { Either, left, right } from '@/core/either';
 import { DuplicateSlugNameError } from '../erros/erro/duplicateEntity';
 

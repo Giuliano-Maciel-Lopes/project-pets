@@ -56,6 +56,16 @@ describe('ControllerListUnits (e2e)', () => {
     expect(res.body.units.every((u: any) => u.city === 'Curitiba')).toBe(true);
   });
 
+  it('GET /units — deve retornar 400 com page=0', async () => {
+    const res = await adminAgent.get('/units').query({ page: 0 });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('GET /units — deve retornar 400 com limit=101', async () => {
+    const res = await adminAgent.get('/units').query({ limit: 101 });
+    expect(res.statusCode).toBe(400);
+  });
+
   it('GET /units — deve filtrar por isActive', async () => {
     const manager = await userFactory.makePrismaUser();
     await unitFactory.makePrismaUnit({ managerId: manager.id, isActive: false, name: 'Inativa Y' });

@@ -36,8 +36,6 @@ export class AdoptionCandidate extends AggregateRoot<AdoptionCandidateProps> {
     return adoptionCandidateContent;
   }
 
-  // seTERS
-
   private touch() {
     this.props.updatedAt = new Date();
   }

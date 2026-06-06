@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { RepositoriesUnits } from '../repositories/unistsRepositories';
+﻿import { Injectable } from '@nestjs/common';
+import { RepositoriesUnits } from '../repositories/unitsRepositories';
 import { Either, left, right } from '@/core/either';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { Role } from '@/domain/account/enterprise/entities/users';
@@ -18,7 +18,7 @@ type deleteUnitServiceResponse = Either<NotFoundError | UnauthorizedError, null>
 type UnitContext = { actor: { id: string; role: Role }; unit: Units | null };
 
 @Injectable()
-export class ServicedeleteUnit {
+export class ServiceDeleteUnit {
   constructor(private repositoriesUnits: RepositoriesUnits) {}
 
   async execute({

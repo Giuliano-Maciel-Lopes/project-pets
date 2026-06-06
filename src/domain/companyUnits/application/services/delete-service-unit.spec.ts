@@ -1,5 +1,5 @@
 import { InMemoryRepositoriesUnits } from '@/test/repositories/in-memory-units';
-import { ServicedeleteUnit } from './delete-service-unit';
+import { ServiceDeleteUnit } from './delete-service-unit';
 import { makeUnit } from '@/test/factories/makeUnit';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';
@@ -8,12 +8,12 @@ const adminActor = { id: 'admin-01', role: Role.ADMIN };
 const adopterActor = { id: 'adopter-01', role: Role.ADOPTER };
 
 let inMemoryRepositoriesUnits: InMemoryRepositoriesUnits;
-let sut: ServicedeleteUnit;
+let sut: ServiceDeleteUnit;
 
 describe('Delete Units', () => {
   beforeEach(() => {
     inMemoryRepositoriesUnits = new InMemoryRepositoriesUnits();
-    sut = new ServicedeleteUnit(inMemoryRepositoriesUnits);
+    sut = new ServiceDeleteUnit(inMemoryRepositoriesUnits);
   });
 
   it('deve deletar uma unidade corretamente', async () => {

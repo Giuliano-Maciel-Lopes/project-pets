@@ -12,7 +12,7 @@ interface AuthenticateUserServiceRequest {
 
 type AuthenticateUserServiceResponse = Either<
   WrongCredentialsError,
-  { accesToken: string }
+  { accessToken: string }
 >;
 
 @Injectable()
@@ -33,11 +33,11 @@ export class ServiceAuthenticateUser {
       return left(new WrongCredentialsError());
     }
 
-    const accesToken = await this.encrypterToken.encryptToken({
+    const accessToken = await this.encrypterToken.encryptToken({
       sub: user.id.toString(),
       role: user.role,
     });
 
-    return right({ accesToken });
+    return right({ accessToken });
   }
 }

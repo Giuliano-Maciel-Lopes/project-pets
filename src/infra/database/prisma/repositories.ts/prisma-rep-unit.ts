@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   RepositoriesUnits,
   ListUnitsFilters,
   PaginatedUnits,
-} from '@/domain/companyUnits/application/repositories/unistsRepositories';
+} from '@/domain/companyUnits/application/repositories/unitsRepositories';
 import { Units } from '@/domain/companyUnits/enterprise/entities/unity';
 import { MapperPrismaUnit } from '../mappers/unit-mapper';
 

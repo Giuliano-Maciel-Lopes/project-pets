@@ -74,6 +74,16 @@ describe('ControllerListPets (e2e)', () => {
     expect(res.body.pets.every((p: any) => p.status === 'unavailable')).toBe(true);
   });
 
+  it('GET /pets — deve retornar 400 com page=0', async () => {
+    const res = await adminAgent.get('/pets').query({ page: 0 });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('GET /pets — deve retornar 400 com limit=101', async () => {
+    const res = await adminAgent.get('/pets').query({ limit: 101 });
+    expect(res.statusCode).toBe(400);
+  });
+
   it('GET /pets — deve filtrar por unitId', async () => {
     const manager = await userFactory.makePrismaUser();
     const unit = await unitFactory.makePrismaUnit({ managerId: manager.id });

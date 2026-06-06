@@ -5,7 +5,7 @@ import { CreateAdoptionEvent } from '@/domain/adoption/enterprise/events/create-
 import { DomainEvents } from '@/core/events/domain-events';
 import { SYSTEM_ACTOR } from '@/core/system-actor';
 
-export class OncreateAdoption implements EventHandler {
+export class OnCreateAdoption implements EventHandler {
   constructor(private serviceSetStatusPets: ServiceSetStatusPets) {
     this.setupSubscriptions();
   }

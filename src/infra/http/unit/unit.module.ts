@@ -5,7 +5,7 @@ import { ServiceFindUnitById } from '@/domain/companyUnits/application/services/
 import { ServiceFindUnitBySlug } from '@/domain/companyUnits/application/services/findBySlug-service';
 import { ServiceListUnits } from '@/domain/companyUnits/application/services/zlist-service-unit';
 import { ServiceUpdateUnit } from '@/domain/companyUnits/application/services/update-service-unit';
-import { ServicedeleteUnit } from '@/domain/companyUnits/application/services/delete-service-unit';
+import { ServiceDeleteUnit } from '@/domain/companyUnits/application/services/delete-service-unit';
 import { ServicetoggleActiveUnit } from '@/domain/companyUnits/application/services/isactive-service-unit';
 import { ControllerCreateUnit } from './controller/create-unit.controller';
 import { ControllerFindUnitById } from './controller/find-unit-by-id.controller';
@@ -32,7 +32,7 @@ import { ControllerToggleActiveUnit } from './controller/toggle-active-unit.cont
     ServiceFindUnitBySlug,
     ServiceListUnits,
     ServiceUpdateUnit,
-    ServicedeleteUnit,
+    ServiceDeleteUnit,
     ServicetoggleActiveUnit,
   ],
 })

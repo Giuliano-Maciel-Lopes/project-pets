@@ -1,8 +1,8 @@
-import {
+﻿import {
   RepositoriesUnits,
   ListUnitsFilters,
   PaginatedUnits,
-} from '@/domain/companyUnits/application/repositories/unistsRepositories';
+} from '@/domain/companyUnits/application/repositories/unitsRepositories';
 import { Units } from '@/domain/companyUnits/enterprise/entities/unity';
 
 export class InMemoryRepositoriesUnits implements RepositoriesUnits {

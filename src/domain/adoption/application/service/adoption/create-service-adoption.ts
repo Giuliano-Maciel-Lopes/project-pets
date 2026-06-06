@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import {
   Adoption,
@@ -8,7 +8,7 @@ import { Either, left, right } from '@/core/either';
 import { RepositoriesAdoption } from '../../repositories/adoption';
 import { PetStatus } from '@/domain/pets/enterprise/entity/pets';
 import { RepositoriesPets } from '@/domain/pets/application/repositories/pets';
-import { RepositoriesUnits } from '@/domain/companyUnits/application/repositories/unistsRepositories';
+import { RepositoriesUnits } from '@/domain/companyUnits/application/repositories/unitsRepositories';
 import { RepositoriesAdoptionCandidate } from '../../repositories/adoptioncandidate';
 import {
   UnitAndPetDistincsPolicy,

@@ -1,7 +1,7 @@
 import { InMemoryRepositoriesPets } from '@/test/repositories/in-memory-pets';
 import { InMemoryRepositoriesAdoption } from '@/test/repositories/in-memory-adoptions';
 import { ServiceSetStatusPets } from '@/domain/pets/application/services/setStatus-service-pets';
-import { OncreateAdoption } from './on-create-adaption';
+import { OnCreateAdoption } from './on-create-adaption';
 import { PetStatus } from '@/domain/pets/enterprise/entity/pets';
 import { makePet } from '@/test/factories/makePet';
 import { makeAdoption } from '@/test/factories/makeAdoption';
@@ -22,7 +22,7 @@ describe('OnCreateAdoption Event', () => {
 
     executeSpy = vi.spyOn(serviceSetStatusPets, 'execute');
 
-    new OncreateAdoption(serviceSetStatusPets);
+    new OnCreateAdoption(serviceSetStatusPets);
   });
 
   it('muda o status do pet para ANALYSIS quando cria um adoption', async () => {

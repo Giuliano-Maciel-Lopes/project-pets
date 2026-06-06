@@ -1,5 +1,5 @@
 import { CandidateBannedError } from '../errro/candidateBannedError';
-import { CandidateMustNotBeBannedPolicy } from './CantidadeIsBannedPolicy';
+import { CandidateMustNotBeBannedPolicy } from './CandidateIsBannedPolicy';
 import { makeCandidate } from '@/test/factories/makeCandidate';
 import { makePolicyContext } from '@/test/police/makePoliceConext';
 

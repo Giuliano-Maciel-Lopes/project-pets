@@ -1,5 +1,5 @@
 import { Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param } from '@nestjs/common';
-import { ServicedeleteUnit } from '@/domain/companyUnits/application/services/delete-service-unit';
+import { ServiceDeleteUnit } from '@/domain/companyUnits/application/services/delete-service-unit';
 import { ZodValidationPipe } from '../../pipes/zod-pipes';
 import { uuidParamSchema } from '../../schemas/uuid-param.schema';
 import { Roles } from '@/infra/auth/roles';
@@ -13,7 +13,7 @@ import { DeleteUnitDocs } from '../docs/unit.docs';
 @ApiBearerAuth('JWT')
 @Controller('/units')
 export class ControllerDeleteUnit {
-  constructor(private deleteUnit: ServicedeleteUnit) {}
+  constructor(private deleteUnit: ServiceDeleteUnit) {}
 
   @Delete(':id')
   @Roles(Role.ADMIN)

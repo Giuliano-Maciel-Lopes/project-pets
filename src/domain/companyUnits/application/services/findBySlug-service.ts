@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { Units } from '../../enterprise/entities/unity';
-import { RepositoriesUnits } from '../repositories/unistsRepositories';
+import { RepositoriesUnits } from '../repositories/unitsRepositories';
 import { Either, left, right } from '@/core/either';
 
 interface FindBySlugUnitServiceRequest {

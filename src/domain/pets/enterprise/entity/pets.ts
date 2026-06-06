@@ -81,11 +81,9 @@ export class Pets extends AggregateRoot<PetProps> {
     this.touch();
   }
 
-  setattachment(attachment: PetAttachmentlist) {
+  setAttachment(attachment: PetAttachmentlist) {
     this.props.attachment = attachment;
   }
-
-  // geters
 
   get name() {
     return this.props.name;

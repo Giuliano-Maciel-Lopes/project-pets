@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
-import { RepositoriesUnits } from '../repositories/unistsRepositories';
+import { RepositoriesUnits } from '../repositories/unitsRepositories';
 import { NotFoundError } from '@/core/erros/erro/not-found-items';
 import { Role } from '@/domain/account/enterprise/entities/users';
 import { UnauthorizedError } from '@/core/erros/erro/unauthorized-error';

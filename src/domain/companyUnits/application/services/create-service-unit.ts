@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { createUniqueUnitSlug } from '../../../../core/utils/createUniqueUnitSlug';
 import { Units } from '../../enterprise/entities/unity';
-import { RepositoriesUnits } from '../repositories/unistsRepositories';
+import { RepositoriesUnits } from '../repositories/unitsRepositories';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Either } from '@/core/either';
 import { DuplicateSlugNameError } from '@/core/erros/erro/duplicateEntity';
