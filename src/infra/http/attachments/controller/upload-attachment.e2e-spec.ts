@@ -30,7 +30,7 @@ describe('ControllerUploadAttachment (e2e)', () => {
   });
 
   it('POST /attachments — deve fazer upload de uma imagem', async () => {
-    const fakeImage = Buffer.from('fake-image-content');
+    const fakeImage = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
 
     const res = await adminAgent
       .post('/attachments')
@@ -60,7 +60,7 @@ describe('ControllerUploadAttachment (e2e)', () => {
 
   it('POST /attachments — deve funcionar para ADOPTER autenticado', async () => {
     const adopterAgent = await loginAsAdopter(app, userFactory);
-    const fakeImage = Buffer.from('fake-image-content');
+    const fakeImage = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
     const res = await adopterAgent
       .post('/attachments')
